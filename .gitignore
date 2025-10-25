@@ -1,0 +1,46 @@
+.venv/
+dataset/
+smaller_dataset/
+videos - Copy/
+
+
+
+
+
+# Operating System Files
+.DS_Store
+Thumbs.db
+
+# IDE and Editor Files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Python
+__pycache__/
+*.py[cod]
+*.so
+venv/
+.env
+
+# Compiled Files
+*.com
+*.class
+*.dll
+*.exe
+*.o
+*.out
+
+# Logs and Databases
+*.log
+*.sql
+*.sqlite
+
+# Build and Distribution
+dist/
+build/
+*.egg-info/
+
+# Dependencies
+node_modules/
