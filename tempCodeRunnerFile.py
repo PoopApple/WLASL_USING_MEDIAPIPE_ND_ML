@@ -1,3 +1,6 @@
-import tensorflow as tf
-print("TensorFlow version:", tf.__version__)
-print("GPUs:", tf.config.list_physical_devices('GPU'))
+data_into_readable_for_ltsm()
+    # print(y)
+    # print(x)
+    
+    # print(y.shape)
+    # print(y[0].shape)

@@ -8,3 +8,6 @@ from tensorflow.keras.layers import LSTM, Dense, Dropout
 from sklearn.preprocessing import LabelEncoder
 from tensorflow.keras.utils import to_categorical
 from sklearn.model_selection import train_test_split
+
+
+print(tf.__version__)
