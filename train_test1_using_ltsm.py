@@ -1,14 +1,21 @@
-import tensorflow as tf
-print("TensorFlow version:", tf.__version__)
-print("GPUs:", tf.config.list_physical_devices('GPU'))
+"""activate venv =>
 
 
+source /home/aryan/opensource_lab_proj/venv/bin/activate
 """
 
+
+
+
+
+
+
 import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+
 import numpy as np
 import matplotlib.pyplot as plt
-from sklearn.preprocessing import LabelEncoder
+from sklearn.preprocessing import LabelEncoderp
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import LSTM, Dense, Dropout
@@ -42,4 +49,3 @@ if __name__ == "__main__":
     
     
     
-"""
