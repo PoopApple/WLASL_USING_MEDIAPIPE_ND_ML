@@ -44,12 +44,20 @@ needed_poses = [0,2,5,7,8,9,10,11,12,13,15,14,16,23,24] #15
 
 # For webcam input:
 cap = cv2.VideoCapture(vid_path)
+
+
+
+fps = cap.get(cv2.CAP_PROP_FPS)
+total_num_frames = cap.get(cv2.CAP_PROP_FRAME_COUNT)
+
 print(cap.get(cv2.CAP_PROP_FPS))
 print(cap.get(cv2.CAP_PROP_FRAME_COUNT))
 hands = mp_hands.Hands(static_image_mode = False,  model_complexity=1, min_detection_confidence=0.4, min_tracking_confidence=0.4, max_num_hands=2)
 pose = mp_pose.Pose(static_image_mode = False, model_complexity=1, min_detection_confidence=0.5, min_tracking_confidence=0.5)
 
 success, image = cap.read()
+
+landmark_for_all_frames = []
 
 while cap.isOpened():
     if cv2.waitKey(5) & 0xFF == 27:
@@ -71,8 +79,10 @@ while cap.isOpened():
         image.flags.writeable = True
         image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
 
+        landmark_for_one_frame = []
+        """ format = all 15 poses(face and arms and wrists and torso) then left hand then right hand"""
         if result_pose:
-            print(f"pose landmarks: {len(result_pose.pose_landmarks.landmark)}")
+            # print(f"pose landmarks: {len(result_pose.pose_landmarks.landmark)}")
 
             # print(f"nose: {result_pose.pose_landmarks.landmark[0]}")
             # print(f"le ear: {result_pose.pose_landmarks.landmark[7]}")
@@ -84,9 +94,9 @@ while cap.isOpened():
             array of landmarks need --  15x4 = 15landmarks with 4 dimensions [x y z visibility]
             """
 
-            
             # pose_
-            landmark_for_one_frame = [
+            landmark_for_one_frame.extend(
+                [
                     [
                         result_pose.pose_landmarks.landmark[i].x,
                         result_pose.pose_landmarks.landmark[i].y,
@@ -95,40 +105,84 @@ while cap.isOpened():
                     ]
                     for i in needed_poses
                 ]
+            )
             # np_pose_landmark_for_one_frame = np.array(pose_landmark_for_one_frame,dtype=np.float32)
             # print(np_pose_landmark_for_one_frame.shape) ==== 15x4
-            
 
             mp_drawing.draw_landmarks(
                 image,
                 result_pose.pose_landmarks,
                 mp_pose.POSE_CONNECTIONS,
                 landmark_drawing_spec=mp_drawing_styles.get_default_pose_landmarks_style())
+        else:
+            landmark_for_one_frame.extend(
+                [
+                    [
+                        0,0,0,0
+                    ]
+                    for i in needed_poses
+                ]
+            )
 
-        
-        
         """https://stackoverflow.com/questions/67455791/mediapipe-python-link-landmark-with-handedness"""
-        
-        
+
         if results.multi_hand_landmarks:
-            print(len(results.multi_hand_landmarks))
-            
-            
-            # for handedness in results.multi_handedness:
-            #     # print(handedness)
-            #     idx = handedness.classification[0].index
-            #     print(idx)
-            
+
+            hand_landmarks_list = {"Left": [], "Right": []}
+
+            # print(len(results.multi_hand_landmarks))
+
+            for handedness in results.multi_handedness:
+                # print(handedness)
+                idx = handedness.classification[0].index
+                # print(idx)
+
             # if len(results.multi_hand_landmarks) == 2:
             #         print(results.multi_hand_landmarks)
             for idx, hand_landmarks in enumerate(results.multi_hand_landmarks):
                 lbl = results.multi_handedness[idx].classification[0].label
-                print(lbl)
+                # print()
+                # print(lbl)
 
                 # print(hand_landmarks)
-                print(f"hand landmarks: {len(hand_landmarks.landmark)}")
+                # print(f"hand landmarks: {len(hand_landmarks.landmark)}")
+                # for ind in range(21):
+                    # print([hand_landmarks.landmark[ind].x , hand_landmarks.landmark[ind].y , hand_landmarks.landmark[ind].z , 1])
+
+                hand_landmarks_list[lbl] = [[hand_landmarks.landmark[ind].x , hand_landmarks.landmark[ind].y , hand_landmarks.landmark[ind].z , 1] for ind in range(21)]
+                # print(hand_landmarks_list)
+
+                # print(hand_landmarks.landmark[0])
+                """
+                NOTE
+                NOTE
+                NOTE
+                NOTE
+                
+                done --- ADD LEFT HAND LANDMARKS TO LEFTHAND LIST AND RIGHT TO RIGHT HAND USING IF ELSE OR WHATEVER
                 
                 
+                THEN CHECK ALL DIMESNIONS
+                total landmarks = 15+21+21 = 57
+                each has x,y,z,visibilty 
+                
+                done --- shape of each frame data = 57x4 
+                
+                
+                THEN NORMALISE DATA TO 70 FRAMES USING LIN SPACE
+                
+                THEN STORE IN NPY
+                
+                
+                THEN RUN LTSM
+                
+                THEN TRY OUT 3DCNN
+                
+                
+                
+                
+                """
+
                 mp_drawing.draw_landmarks(
                     image,
                     hand_landmarks,
@@ -136,27 +190,54 @@ while cap.isOpened():
                     mp_drawing_styles.get_default_hand_landmarks_style(),
                     mp_drawing_styles.get_default_hand_connections_style(),
                 )
-
-        # Flip the image horizontally for a selfie-view display.
+            
+            if hand_landmarks_list["Left"] == []:
+                landmark_for_one_frame.extend([[0,0,0,0] for i in range(21)])
+                # print([[0,0,0,0] for i in range(21)])
+                # print(landmark_for_one_frame)
+            else:
+                landmark_for_one_frame.extend(hand_landmarks_list["Left"])
+                
+            if hand_landmarks_list["Right"] == []:
+                landmark_for_one_frame.extend([[0,0,0,0] for i in range(21)])
+                # print([[0,0,0,0] for i in range(21)])
+                # print(landmark_for_one_frame)
+            else:
+                landmark_for_one_frame.extend(hand_landmarks_list["Right"])
+            
+            # print([[0,0,0,0] for i in range(21)])
+            # print(landmark_for_one_frame)
+            # print(len(landmark_for_one_frame))
+        
+        else:
+            landmark_for_one_frame.extend([[0,0,0,0] for i in range(21)])
+            landmark_for_one_frame.extend([[0,0,0,0] for i in range(21)])
+            
+        
+        
+        
+        
+        
+        landmark_for_all_frames.extend([landmark_for_one_frame])
+    print(total_num_frames)
+    print(len(landmark_for_all_frames))
+            
+            
+            
     original_height, original_width = image.shape[:2]
 
-
-
-    
-        # Define new width while maintaining the aspect ratio
+    # Define new width while maintaining the aspect ratio
     new_width = 800
     aspect_ratio = new_width / original_width
     new_height = int(original_height * aspect_ratio)  # Compute height based on aspect ratio
-    
+
     # Resize the image
     resized_image = cv2.resize(cv2.flip(image, 1), (new_width, new_height))
-    
+
     # Display the resized image
     cv2.imshow("Resized Image", resized_image)
-    
-    
-    # cv2.imshow("MediaPipe Hands", cv2.flip(image, 1))
 
+    # cv2.imshow("MediaPipe Hands", cv2.flip(image, 1))
 
     # if cv2.waitKey(5) & 0xFF == 27:
     #     break

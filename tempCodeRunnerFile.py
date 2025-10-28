@@ -1,4 +1,3 @@
-    if not success:
-            print("Ignoring empty camera frame.")
-            # If loading a video, use 'break' instead of 'continue'.
-            break
+import tensorflow as tf
+print("TensorFlow version:", tf.__version__)
+print("GPUs:", tf.config.list_physical_devices('GPU'))

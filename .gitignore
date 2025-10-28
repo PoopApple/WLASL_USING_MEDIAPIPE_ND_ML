@@ -1,6 +1,7 @@
 .venv/
 dataset/
 smaller_dataset/
+smaller_dataset_landmarks/
 videos - Copy/
 all_videos/
 
