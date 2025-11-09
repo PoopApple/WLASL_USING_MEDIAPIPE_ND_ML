@@ -18,18 +18,33 @@ NOTE numpy not used
 # os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 
+import os, sys
+
+# Redirect stderr to null at the OS level BEFORE mediapipe loads
+stderr_fd = sys.stderr.fileno()
+null_fd = open(os.devnull, "w")
+os.dup2(null_fd.fileno(), stderr_fd)
 
 
-import os
+
+
 os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
 os.environ["GLOG_minloglevel"] = "3"        # 0=INFO, 1=WARNING, 2=ERROR, 3=FATAL
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"    # Hide TF Lite warnings too
+os.environ['MEDIAPIPE_DISABLE_GPU'] = '1'
+os.environ["ABSL_LOGGING_THRESHOLD"] = "FATAL"
+
+
+# import absl.logging
+# absl.logging.set_verbosity(absl.logging.ERROR)
+# absl.logging.set_stderrthreshold('fatal')
 
 
 import cv2
 
 
 import mediapipe as mp
+
 
 import numpy as np
 import multiprocessing as multip
