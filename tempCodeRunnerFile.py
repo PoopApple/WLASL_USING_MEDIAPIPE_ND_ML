@@ -1,3 +1,2 @@
-import tensorflow as tf
-print("TensorFlow version:", tf.__version__)
-print("GPUs:", tf.config.list_physical_devices('GPU'))
+
+    # doshit(vid_path="./dataset/across/00836.mp4",showvid=True)

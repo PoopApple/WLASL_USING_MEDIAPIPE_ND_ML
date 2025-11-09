@@ -6,7 +6,9 @@ smaller_dataset_landmarks/
 videos - Copy/
 all_videos/
 
+dataset_removed/
 
+test_vid/*.mp4
 
 
 
