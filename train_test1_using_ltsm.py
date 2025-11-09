@@ -19,6 +19,21 @@ add poses of hands
 """
 
 
+"""
+
+1️⃣ Subtract midpoint of shoulders as origin
+2️⃣ Divide by shoulder distance
+3️⃣ Optionally, rotate so shoulders are level
+
+
+add poses of hands
+
+
+
+
+"""
+
+
 
 """
 installed using this guide

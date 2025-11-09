@@ -14,8 +14,8 @@ NOTE numpy not used
 
 """FALTU WARNIGN HATAO"""
 import os
-os.environ['GLOG_minloglevel'] = '2'  # Suppresses INFO and WARNING
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+# os.environ['GLOG_minloglevel'] = '2'  # Suppresses INFO and WARNING
+# os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 
 import cv2
@@ -493,9 +493,28 @@ def process_all(input_folder, output_folder , printdebug = True , num_workers = 
 
 if __name__ == "__main__":
     
+    
+    
     dataset_folder = ".\\smaller_dataset"
     np_output_folder = ".\\smaller_dataset_landmarks"
     process_all(dataset_folder,np_output_folder,num_workers=10)
+    
+    exit()
+    
+    input_path = "./test_vid/abdomen.mp4"
+    output_path = "./test_vid/addomen.npy"
+    
+    total_num_frames = vid_path = NP_NORMALISED_LANDMARK_ALL_FRAMES = None
+    try:
+        total_num_frames,vid_path,NP_NORMALISED_LANDMARK_ALL_FRAMES = doshit(vid_path=input_path,showvid=True)
+        np.save(output_path,NP_NORMALISED_LANDMARK_ALL_FRAMES)
+    
+    
+    finally:
+        del total_num_frames,vid_path,NP_NORMALISED_LANDMARK_ALL_FRAMES
+        gc.collect()
+    
+    
     
     
 
