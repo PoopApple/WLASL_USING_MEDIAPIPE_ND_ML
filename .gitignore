@@ -10,7 +10,7 @@ dataset_removed/
 
 test_vid/*.mp4
 
-
+gte9_landmarks/
 
 # Operating System Files
 .DS_Store
