@@ -8,10 +8,17 @@ all_videos/
 
 dataset_removed/
 
+gte9_dataset/
+gte9_landmarks/
+
+smaller_dataset_landmarks2/
+
 test_vid/*.mp4
 
+*.mp4
 
-
+gte9_landmarks/
+gte9_landmarks_old/
 # Operating System Files
 .DS_Store
 Thumbs.db

@@ -2,6 +2,19 @@
 https://github.com/google-ai-edge/mediapipe/blob/master/docs/solutions/pose.md#model_complexity
 """
 
+
+
+"""
+TODO
+TODO
+
+now try flipping the videos too
+
+
+
+"""
+
+
 """
 MARKERS
 
@@ -20,10 +33,10 @@ NOTE numpy not used
 
 import os, sys
 
-# Redirect stderr to null at the OS level BEFORE mediapipe loads
-stderr_fd = sys.stderr.fileno()
-null_fd = open(os.devnull, "w")
-os.dup2(null_fd.fileno(), stderr_fd)
+# # Redirect stderr to null at the OS level BEFORE mediapipe loads
+# stderr_fd = sys.stderr.fileno()
+# null_fd = open(os.devnull, "w")
+# os.dup2(null_fd.fileno(), stderr_fd)
 
 
 
@@ -61,7 +74,8 @@ def doshit(
     dopythonlists=False,
     printdebugdata=False,
     normalisearray=True,
-    solidbg=False
+    solidbg=False,
+    fliptheimg=False
 ):
     mp_drawing = mp.solutions.drawing_utils
     mp_drawing_styles = mp.solutions.drawing_styles
@@ -133,14 +147,14 @@ def doshit(
     hands = mp_hands.Hands(
         static_image_mode=False,
         model_complexity=1,
-        min_detection_confidence=0.3,
+        min_detection_confidence=0.4,
         min_tracking_confidence=0.2,
         max_num_hands=2,
     )
     pose = mp_pose.Pose(
         static_image_mode=False,
         model_complexity=1,
-        min_detection_confidence=0.3,
+        min_detection_confidence=0.5,
         min_tracking_confidence=0.2,
     )
 
@@ -179,6 +193,8 @@ def doshit(
             break
 
         success, image = cap.read()
+        if fliptheimg:
+            image = cv2.flip(image,1)
         # success, image = cap.read()
         if not success:
             print("Ignoring empty camera frame.")
@@ -498,6 +514,13 @@ def doshit(
         # print(landmark_for_one_frame[0][0])
         # print(NP_LANDMARK_ALL_FRAMES[0][0][0])
 
+        
+
+            
+        
+        
+        
+        
         if printdebugdata:
             for i in range(63):
                 print(f"{i} =  {NP_LANDMARK_ALL_FRAMES[frame_index][i]}")
@@ -543,6 +566,30 @@ def doshit(
     pose.close()
 
     gc.collect()
+    
+    
+    
+    """MAKIGN IT SO THE LAST KNOWN VALUE OF HAND LANDMARKS IS USED"""
+        
+    lastknownleft = np.zeros((21,4))
+    lastknownright = np.zeros((21,4))
+    allzeros = np.zeros((21,4))
+    for fram in range(total_num_frames):
+        
+        if lastknownleft != allzeros and NP_LANDMARK_ALL_FRAMES[fram][21:42] == allzeros:
+            NP_LANDMARK_ALL_FRAMES[fram][21:42] = lastknownleft
+        elif lastknownleft == allzeros and NP_LANDMARK_ALL_FRAMES[fram][21:42] != allzeros:
+            lastknownleft = NP_LANDMARK_ALL_FRAMES[fram][21:42] 
+            
+        if lastknownright != allzeros and NP_LANDMARK_ALL_FRAMES[fram][42:63] == allzeros:
+            NP_LANDMARK_ALL_FRAMES[fram][42:63] = lastknownright
+        elif lastknownright == allzeros and NP_LANDMARK_ALL_FRAMES[fram][42:63] != allzeros:
+            lastknownright = NP_LANDMARK_ALL_FRAMES[fram][42:63] 
+            
+            
+
+    
+    
 
     if dopythonlists:
         print("SAHI AAYA:")
@@ -564,11 +611,11 @@ def doshit(
         return (total_num_frames, vid_path, NP_LANDMARK_ALL_FRAMES)
 
 
-def process_one(input_path, output_path):
+def process_one(input_path, output_path, flipit=False):
     total_num_frames = vid_path = NP_NORMALISED_LANDMARK_ALL_FRAMES = None
     try:
         total_num_frames, vid_path, NP_NORMALISED_LANDMARK_ALL_FRAMES = doshit(
-            input_path
+            input_path, fliptheimg=flipit
         )
         np.save(output_path, NP_NORMALISED_LANDMARK_ALL_FRAMES)
         print(f"Saved:\t{output_path}")
@@ -592,7 +639,7 @@ logical processors h 12
 
 
 def process_all(
-    input_folder, output_folder, printdebug=True, num_workers=os.cpu_count() - 1
+    input_folder, output_folder, printdebug=True, num_workers=os.cpu_count() - 1,doflipalso= False
 ):
     os.makedirs(output_folder, exist_ok=True)
 
@@ -611,6 +658,8 @@ def process_all(
         for filename in os.listdir(input_word_folder):
 
             if filename.lower().endswith(".mp4"):
+                
+                "unflipped"
                 input_path = os.path.join(input_word_folder, filename)
                 output_path = os.path.join(output_word_folder, filename[:-4] + ".npy")
                 if printdebug:
@@ -618,11 +667,26 @@ def process_all(
                     print(output_path)
 
                 if not os.path.exists(output_path):
-                    ip_op_path_list_of_tasks.append((input_path, output_path))
+                    ip_op_path_list_of_tasks.append((input_path, output_path,False))
                     # process_one(input_path,output_path)
                 else:
                     if printdebug:
                         print("already saved")
+                        
+                if doflipalso:        
+                    "flipped"
+                    input_path = os.path.join(input_word_folder, filename)
+                    output_path = os.path.join(output_word_folder, filename[:-4] + "_flipped.npy")
+                    if printdebug:
+                        print(input_path)
+                        print(output_path)
+
+                    if not os.path.exists(output_path):
+                        ip_op_path_list_of_tasks.append((input_path, output_path,True))
+                        # process_one(input_path,output_path)
+                    else:
+                        if printdebug:
+                            print("already saved")
 
     """
     each processvid meri 200-300MB ram leta h
@@ -659,6 +723,25 @@ def process_all(
         print("exiiitttt")
 
 
+def blahblah():
+    input_paths = ["./gte9_test_vid/ball.mp4","./gte9_test_vid/cat.mp4","./gte9_test_vid/bed.mp4"]
+    input_paths=["./gte9_test_vid/country.mp4"]
+    output_paths = [x[:-4]+".npy" for x in input_paths]
+    
+
+
+    for input_path,output_path in zip(input_paths,output_paths):
+        total_num_frames = vid_path = NP_NORMALISED_LANDMARK_ALL_FRAMES = None
+        try:
+            total_num_frames, vid_path, NP_NORMALISED_LANDMARK_ALL_FRAMES = doshit(
+                vid_path=input_path, showvid=True
+            )
+            np.save(output_path, NP_NORMALISED_LANDMARK_ALL_FRAMES)
+
+        finally:
+            del total_num_frames, vid_path, NP_NORMALISED_LANDMARK_ALL_FRAMES
+            gc.collect()
+
 if __name__ == "__main__":
 
     """
@@ -670,30 +753,28 @@ if __name__ == "__main__":
     
     
     
-    
-    # doshit(vid_path="./dataset/across/00832.mp4", showvid=True, printdebugdata=False)
+    # doshit(vid_path="./dataset/across/00832.mp4", showvid=True)
+    # doshit(vid_path="./dataset/across/00832.mp4", showvid=True, fliptheimg=True)
     # doshit(vid_path="./dataset/across/00834.mp4", showvid=True)
     # doshit(vid_path="./dataset/across/00836.mp4", showvid=True)
 
-    dataset_folder = ".\\smaller_dataset"
-    np_output_folder = ".\\smaller_dataset_landmarks"
-    process_all(dataset_folder,np_output_folder,num_workers=10)
+    # dataset_folder = "./gte9_dataset"
+    # np_output_folder = "./gte9_landmarks"
+    # process_all(dataset_folder,np_output_folder,num_workers=10)
+    
+    # exit()
+    
+    
+    
+    # dataset_folder = ".\\smaller_dataset"
+    # np_output_folder = ".\\smaller_dataset_landmarks"
+    # process_all(dataset_folder,np_output_folder,num_workers=10)
 
-    exit()
+    # exit()
 
-    input_path = "./test_vid/about.mp4"
-    output_path = "./test_vid/adout.npy"
-
-    total_num_frames = vid_path = NP_NORMALISED_LANDMARK_ALL_FRAMES = None
-    try:
-        total_num_frames, vid_path, NP_NORMALISED_LANDMARK_ALL_FRAMES = doshit(
-            vid_path=input_path, showvid=True
-        )
-        np.save(output_path, NP_NORMALISED_LANDMARK_ALL_FRAMES)
-
-    finally:
-        del total_num_frames, vid_path, NP_NORMALISED_LANDMARK_ALL_FRAMES
-        gc.collect()
+    
+    
+    blahblah()
 
 
 # total_num_frames2,landmark_for_all_frames2 = doshit(showvid=True)
