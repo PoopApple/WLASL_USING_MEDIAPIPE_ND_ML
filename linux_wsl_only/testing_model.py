@@ -42,11 +42,21 @@ modelu = "../models/18-34_09-11-25_100_0.1250_0.3_128lstm_signlang_lstm_model.h5
 modelu = "../models/18-47_09-11-25_120_0.1490_0.3_128lstm_signlang_lstm_model.keras"
 modelu = "../models/18-59_09-11-25_120_0.2260_0.3_GRU_signlang_model.keras"
 modelu = "../models/19-27_09-11-25_120_0.1683_0.3_GRU_signlang_model.keras"
-modelu = "../models/23-57_13-11-25_120_0.0858_0.3_GRU_signlang_model.keras"
-model="../models/18-32_13-11-25_45_43.61_0.3_GRU_signlang_model.keras"
-model="../models/StrongerGRU_18-52_13-11-25_120_0.0987_0.3_signlang_model.keras"
+# modelu = "../models/23-57_13-11-25_120_0.0858_0.3_GRU_signlang_model.keras" #2/4
+# model="../models/18-32_13-11-25_45_43.61_0.3_GRU_signlang_model.keras" #2/4
+# model="../models/StrongerGRU_18-52_13-11-25_120_0.0987_0.3_signlang_model.keras" #2/4
+# modelu="../models/SimpleGRU__19-53_13-11-25_120_0.1942_0.2_GRU_signlang_model.keras" #0/4
+modelu="../models/02-14_14-11-25_200_0.2913_0.15_GRU_signlang_model.keras" #3/4
+modelu="../models/02-42_14-11-25_200_0.1767_0.25_GRU_signlang_model.keras"
+modelu="../models/18___03-03_14-11-25_200_0.1165_0.25_GRU_signlang_model.keras" #3/4
+modelu = "../models/5___13-50_14-11-25_200_0.1184_0.25_GRU_signlang_model.keras"
+modelu="../models/6_SMALLGRU_14-02_14-11-25_200_0.2272_0.25_signlang_model.keras"
+modelu="../modelscurr_best_pose_model.keras"
+modelu="../models/7_LSTM_14-09_14-11-25_200_0.1146_0.25_signlang_model.keras"
 model = load_model(modelu)
 
+
+print(model.summary())
 inputs = ["../gte9_test/ball.npy","../gte9_test/bed.npy","../gte9_test/cat.npy","../gte9_test/country.npy"]
 
 for ip in inputs:
