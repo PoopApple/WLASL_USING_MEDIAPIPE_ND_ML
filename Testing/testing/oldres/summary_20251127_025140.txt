@@ -1,0 +1,14 @@
+ASL SIGN LANGUAGE RECOGNITION - MODEL COMPARISON RESULTS
+================================================================================
+
+Dataset: GTE9 (204 classes)
+Augmentation: 8x
+Training samples: 11200
+Test samples: 412
+
+Rank   Model                     Accuracy     Loss      
+------------------------------------------------------------
+1      BiGRU_Balanced_Regularization  38.83%     3.2872
+2      LSTM_Attention             37.14%     3.6786
+3      Small_Transformer          30.34%     3.1117
+4      Lightweight_BiLSTM_Balanced_Regularization  25.97%     3.7496

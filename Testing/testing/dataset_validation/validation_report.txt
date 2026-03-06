@@ -1,0 +1,1517 @@
+DATASET VALIDATION REPORT
+================================================================================
+
+Total samples: 2060
+Valid samples: 1946 (94.5%)
+Invalid samples: 114 (5.5%)
+
+
+INVALID SAMPLES BY REASON:
+--------------------------------------------------------------------------------
+Movement: 114 samples
+
+
+INVALID SAMPLES BY WORD:
+--------------------------------------------------------------------------------
+
+accident (2 invalid):
+  - 00633.npy
+  - 65009.npy
+
+ball (2 invalid):
+  - 04854.npy
+  - 04858.npy
+
+balloon (1 invalid):
+  - 04872.npy
+
+banana (2 invalid):
+  - 04896.npy
+  - 65135.npy
+
+beard (1 invalid):
+  - 05476.npy
+
+bed (1 invalid):
+  - 05637.npy
+
+before (1 invalid):
+  - 05740.npy
+
+careful (1 invalid):
+  - 65307.npy
+
+change (5 invalid):
+  - 09954.npy
+  - 09956.npy
+  - 09957.npy
+  - 09966.npy
+  - 09967.npy
+
+cheat (1 invalid):
+  - 10157.npy
+
+city (1 invalid):
+  - 10898.npy
+
+class (2 invalid):
+  - 10972.npy
+  - 10973.npy
+
+cold (1 invalid):
+  - 11621.npy
+
+convince (1 invalid):
+  - 13138.npy
+
+cry (2 invalid):
+  - 14176.npy
+  - 14182.npy
+
+daughter (1 invalid):
+  - 14749.npy
+
+decorate (1 invalid):
+  - 15099.npy
+
+dive (1 invalid):
+  - 16895.npy
+
+environment (2 invalid):
+  - 19408.npy
+  - 19414.npy
+
+example (5 invalid):
+  - 20067.npy
+  - 20068.npy
+  - 20074.npy
+  - 65653.npy
+  - 65654.npy
+
+family (3 invalid):
+  - 20983.npy
+  - 20986.npy
+  - 20987.npy
+
+far (1 invalid):
+  - 65682.npy
+
+first (1 invalid):
+  - 22087.npy
+
+follow (1 invalid):
+  - 22717.npy
+
+football (3 invalid):
+  - 22806.npy
+  - 22810.npy
+  - 65755.npy
+
+form (1 invalid):
+  - 23046.npy
+
+full (1 invalid):
+  - 65792.npy
+
+good (3 invalid):
+  - 25066.npy
+  - 25072.npy
+  - 65835.npy
+
+graduate (2 invalid):
+  - 25326.npy
+  - 25330.npy
+
+halloween (1 invalid):
+  - 26259.npy
+
+help (4 invalid):
+  - 27208.npy
+  - 27209.npy
+  - 27214.npy
+  - 27215.npy
+
+how (2 invalid):
+  - 28205.npy
+  - 28211.npy
+
+inform (1 invalid):
+  - 29649.npy
+
+interest (2 invalid):
+  - 30153.npy
+  - 30154.npy
+
+later (1 invalid):
+  - 32333.npy
+
+laugh (1 invalid):
+  - 32381.npy
+
+letter (3 invalid):
+  - 32953.npy
+  - 32954.npy
+  - 32955.npy
+
+list (1 invalid):
+  - 33473.npy
+
+make (1 invalid):
+  - 34581.npy
+
+meet (1 invalid):
+  - 35517.npy
+
+minute (3 invalid):
+  - 36248.npy
+  - 36249.npy
+  - 66128.npy
+
+near (1 invalid):
+  - 37784.npy
+
+necklace (1 invalid):
+  - 37859.npy
+
+orange (1 invalid):
+  - 40121.npy
+
+perspective (2 invalid):
+  - 42247.npy
+  - 42251.npy
+
+point (2 invalid):
+  - 43443.npy
+  - 43447.npy
+
+practice (2 invalid):
+  - 44083.npy
+  - 44088.npy
+
+sandwich (8 invalid):
+  - 49245.npy
+  - 49247.npy
+  - 49248.npy
+  - 49250.npy
+  - 49251.npy
+  - 49252.npy
+  - 66423.npy
+  - 66424.npy
+
+school (3 invalid):
+  - 49597.npy
+  - 49599.npy
+  - 49600.npy
+
+score (3 invalid):
+  - 49697.npy
+  - 49699.npy
+  - 49700.npy
+
+show (2 invalid):
+  - 51353.npy
+  - 51356.npy
+
+soon (1 invalid):
+  - 53296.npy
+
+tall (1 invalid):
+  - 56848.npy
+
+tell (1 invalid):
+  - 57287.npy
+
+toast (1 invalid):
+  - 58657.npy
+
+town (2 invalid):
+  - 59151.npy
+  - 59153.npy
+
+train (2 invalid):
+  - 59314.npy
+  - 59316.npy
+
+visit (2 invalid):
+  - 61805.npy
+  - 61812.npy
+
+voice (1 invalid):
+  - 61920.npy
+
+wait (1 invalid):
+  - 62107.npy
+
+weekend (1 invalid):
+  - 62736.npy
+
+what (1 invalid):
+  - 62979.npy
+
+work (1 invalid):
+  - 63793.npy
+
+write (1 invalid):
+  - 64061.npy
+
+year (2 invalid):
+  - 64209.npy
+  - 64218.npy
+
+
+DETAILED VALIDATION RESULTS:
+--------------------------------------------------------------------------------
+
+accident/00633.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 3/70 (4.3%)
+  ✓ Visibility: Avg visibility: 0.960
+  ✗ Movement: Very low movement variance: 0.098913 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=0, R=67
+  ✓ Pose Detection: Pose detections: 67/70
+  ✓ Symmetry: Shoulder width: 0.5054
+
+accident/65009.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 1/70 (1.4%)
+  ✓ Visibility: Avg visibility: 0.797
+  ✗ Movement: Very low movement variance: 0.097762 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=37, R=34
+  ✓ Pose Detection: Pose detections: 69/70
+  ✓ Symmetry: Shoulder width: 0.5044
+
+ball/04854.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 2/70 (2.9%)
+  ✓ Visibility: Avg visibility: 0.945
+  ✗ Movement: Very low movement variance: 0.063071 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=68, R=68
+  ✓ Pose Detection: Pose detections: 68/70
+  ✓ Symmetry: Shoulder width: 0.5077
+
+ball/04858.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 2/70 (2.9%)
+  ✓ Visibility: Avg visibility: 0.942
+  ✗ Movement: Very low movement variance: 0.088183 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=68, R=68
+  ✓ Pose Detection: Pose detections: 68/70
+  ✓ Symmetry: Shoulder width: 0.5074
+
+balloon/04872.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 4/70 (5.7%)
+  ✓ Visibility: Avg visibility: 0.960
+  ✗ Movement: Very low movement variance: 0.095331 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=66, R=66
+  ✓ Pose Detection: Pose detections: 66/70
+  ✓ Symmetry: Shoulder width: 0.5069
+
+banana/04896.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 1/70 (1.4%)
+  ✓ Visibility: Avg visibility: 0.778
+  ✗ Movement: Very low movement variance: 0.089112 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=52, R=28
+  ✓ Pose Detection: Pose detections: 69/70
+  ✓ Symmetry: Shoulder width: 0.5193
+
+banana/65135.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 1/70 (1.4%)
+  ✓ Visibility: Avg visibility: 0.878
+  ✗ Movement: Very low movement variance: 0.093859 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=41, R=45
+  ✓ Pose Detection: Pose detections: 69/70
+  ✓ Symmetry: Shoulder width: 0.5174
+
+beard/05476.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 2/70 (2.9%)
+  ✓ Visibility: Avg visibility: 0.870
+  ✗ Movement: Very low movement variance: 0.074846 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=68, R=68
+  ✓ Pose Detection: Pose detections: 68/70
+  ✓ Symmetry: Shoulder width: 0.5131
+
+bed/05637.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 2/70 (2.9%)
+  ✓ Visibility: Avg visibility: 0.753
+  ✗ Movement: Very low movement variance: 0.072271 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=0, R=68
+  ✓ Pose Detection: Pose detections: 68/70
+  ✓ Symmetry: Shoulder width: 0.5360
+
+before/05740.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 3/70 (4.3%)
+  ✓ Visibility: Avg visibility: 0.763
+  ✗ Movement: Very low movement variance: 0.076968 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=67, R=13
+  ✓ Pose Detection: Pose detections: 67/70
+  ✓ Symmetry: Shoulder width: 0.5166
+
+careful/65307.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 1/70 (1.4%)
+  ✓ Visibility: Avg visibility: 0.762
+  ✗ Movement: Very low movement variance: 0.098049 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=31, R=27
+  ✓ Pose Detection: Pose detections: 69/70
+  ✓ Symmetry: Shoulder width: 0.5023
+
+change/09954.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 1/70 (1.4%)
+  ✓ Visibility: Avg visibility: 0.691
+  ✗ Movement: Very low movement variance: 0.079907 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=32, R=12
+  ✓ Pose Detection: Pose detections: 69/70
+  ✓ Symmetry: Shoulder width: 0.5121
+
+change/09956.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 1/70 (1.4%)
+  ✓ Visibility: Avg visibility: 0.682
+  ✗ Movement: Very low movement variance: 0.088062 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=55, R=8
+  ✓ Pose Detection: Pose detections: 69/70
+  ✓ Symmetry: Shoulder width: 0.5127
+
+change/09957.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 1/70 (1.4%)
+  ✓ Visibility: Avg visibility: 0.718
+  ✗ Movement: Very low movement variance: 0.085825 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=41, R=25
+  ✓ Pose Detection: Pose detections: 69/70
+  ✓ Symmetry: Shoulder width: 0.5086
+
+change/09966.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 1/70 (1.4%)
+  ✓ Visibility: Avg visibility: 0.955
+  ✗ Movement: Very low movement variance: 0.053741 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=66, R=42
+  ✓ Pose Detection: Pose detections: 69/70
+  ✓ Symmetry: Shoulder width: 0.5022
+
+change/09967.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 1/70 (1.4%)
+  ✓ Visibility: Avg visibility: 0.896
+  ✗ Movement: Very low movement variance: 0.073424 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=47, R=55
+  ✓ Pose Detection: Pose detections: 69/70
+  ✓ Symmetry: Shoulder width: 0.5090
+
+cheat/10157.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 3/70 (4.3%)
+  ✓ Visibility: Avg visibility: 0.841
+  ✗ Movement: Very low movement variance: 0.091728 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=2, R=67
+  ✓ Pose Detection: Pose detections: 67/70
+  ✓ Symmetry: Shoulder width: 0.5247
+
+city/10898.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 1/70 (1.4%)
+  ✓ Visibility: Avg visibility: 0.945
+  ✗ Movement: Very low movement variance: 0.081017 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=69, R=69
+  ✓ Pose Detection: Pose detections: 69/70
+  ✓ Symmetry: Shoulder width: 0.5068
+
+class/10972.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 2/70 (2.9%)
+  ✓ Visibility: Avg visibility: 0.924
+  ✗ Movement: Very low movement variance: 0.095775 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=68, R=68
+  ✓ Pose Detection: Pose detections: 68/70
+  ✓ Symmetry: Shoulder width: 0.5116
+
+class/10973.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 3/70 (4.3%)
+  ✓ Visibility: Avg visibility: 0.907
+  ✗ Movement: Very low movement variance: 0.075218 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=66, R=67
+  ✓ Pose Detection: Pose detections: 67/70
+  ✓ Symmetry: Shoulder width: 0.5039
+
+cold/11621.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 1/70 (1.4%)
+  ✓ Visibility: Avg visibility: 0.730
+  ✗ Movement: Very low movement variance: 0.089248 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=31, R=3
+  ✓ Pose Detection: Pose detections: 69/70
+  ✓ Symmetry: Shoulder width: 0.5102
+
+convince/13138.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 1/70 (1.4%)
+  ✓ Visibility: Avg visibility: 0.824
+  ✗ Movement: Very low movement variance: 0.097247 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=46, R=45
+  ✓ Pose Detection: Pose detections: 69/70
+  ✓ Symmetry: Shoulder width: 0.5066
+
+cry/14176.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 1/70 (1.4%)
+  ✓ Visibility: Avg visibility: 0.877
+  ✗ Movement: Very low movement variance: 0.091263 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=46, R=48
+  ✓ Pose Detection: Pose detections: 69/70
+  ✓ Symmetry: Shoulder width: 0.5042
+
+cry/14182.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 7/70 (10.0%)
+  ✓ Visibility: Avg visibility: 0.945
+  ✗ Movement: Very low movement variance: 0.072351 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=63, R=63
+  ✓ Pose Detection: Pose detections: 63/70
+  ✓ Symmetry: Shoulder width: 0.5068
+
+daughter/14749.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 1/70 (1.4%)
+  ✓ Visibility: Avg visibility: 0.587
+  ✗ Movement: Very low movement variance: 0.089601 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=1, R=50
+  ✓ Pose Detection: Pose detections: 69/70
+  ✓ Symmetry: Shoulder width: 0.5064
+
+decorate/15099.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 5/70 (7.1%)
+  ✓ Visibility: Avg visibility: 0.961
+  ✗ Movement: Very low movement variance: 0.074097 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=65, R=65
+  ✓ Pose Detection: Pose detections: 65/70
+  ✓ Symmetry: Shoulder width: 0.5037
+
+dive/16895.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 1/70 (1.4%)
+  ✓ Visibility: Avg visibility: 0.643
+  ✗ Movement: Very low movement variance: 0.097773 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=6, R=13
+  ✓ Pose Detection: Pose detections: 69/70
+  ✓ Symmetry: Shoulder width: 0.5161
+
+environment/19408.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 1/70 (1.4%)
+  ✓ Visibility: Avg visibility: 0.691
+  ✗ Movement: Very low movement variance: 0.090644 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=35, R=35
+  ✓ Pose Detection: Pose detections: 69/70
+  ✓ Symmetry: Shoulder width: 0.5119
+
+environment/19414.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 3/70 (4.3%)
+  ✓ Visibility: Avg visibility: 0.900
+  ✗ Movement: Very low movement variance: 0.074809 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=67, R=42
+  ✓ Pose Detection: Pose detections: 67/70
+  ✓ Symmetry: Shoulder width: 0.5149
+
+example/20067.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 1/70 (1.4%)
+  ✓ Visibility: Avg visibility: 0.753
+  ✗ Movement: Very low movement variance: 0.087154 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=53, R=5
+  ✓ Pose Detection: Pose detections: 69/70
+  ✓ Symmetry: Shoulder width: 0.5064
+
+example/20068.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 1/70 (1.4%)
+  ✓ Visibility: Avg visibility: 0.840
+  ✗ Movement: Very low movement variance: 0.098294 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=24, R=55
+  ✓ Pose Detection: Pose detections: 69/70
+  ✓ Symmetry: Shoulder width: 0.5110
+
+example/20074.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 1/70 (1.4%)
+  ✓ Visibility: Avg visibility: 0.960
+  ✗ Movement: Very low movement variance: 0.069339 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=69, R=69
+  ✓ Pose Detection: Pose detections: 69/70
+  ✓ Symmetry: Shoulder width: 0.5032
+
+example/65653.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 1/70 (1.4%)
+  ✓ Visibility: Avg visibility: 0.781
+  ✗ Movement: Very low movement variance: 0.097350 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=35, R=31
+  ✓ Pose Detection: Pose detections: 69/70
+  ✓ Symmetry: Shoulder width: 0.5138
+
+example/65654.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 1/70 (1.4%)
+  ✓ Visibility: Avg visibility: 0.786
+  ✗ Movement: Very low movement variance: 0.094167 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=38, R=37
+  ✓ Pose Detection: Pose detections: 69/70
+  ✓ Symmetry: Shoulder width: 0.5128
+
+family/20983.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 1/70 (1.4%)
+  ✓ Visibility: Avg visibility: 0.817
+  ✗ Movement: Very low movement variance: 0.093176 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=51, R=52
+  ✓ Pose Detection: Pose detections: 69/70
+  ✓ Symmetry: Shoulder width: 0.5079
+
+family/20986.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 2/70 (2.9%)
+  ✓ Visibility: Avg visibility: 0.924
+  ✗ Movement: Very low movement variance: 0.077027 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=68, R=68
+  ✓ Pose Detection: Pose detections: 68/70
+  ✓ Symmetry: Shoulder width: 0.5062
+
+family/20987.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 1/70 (1.4%)
+  ✓ Visibility: Avg visibility: 0.949
+  ✗ Movement: Very low movement variance: 0.084160 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=69, R=69
+  ✓ Pose Detection: Pose detections: 69/70
+  ✓ Symmetry: Shoulder width: 0.5041
+
+far/65682.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 1/70 (1.4%)
+  ✓ Visibility: Avg visibility: 0.877
+  ✗ Movement: Very low movement variance: 0.077860 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=33, R=27
+  ✓ Pose Detection: Pose detections: 69/70
+  ✓ Symmetry: Shoulder width: 0.5091
+
+first/22087.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 2/70 (2.9%)
+  ✓ Visibility: Avg visibility: 0.820
+  ✗ Movement: Very low movement variance: 0.092950 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=49, R=44
+  ✓ Pose Detection: Pose detections: 68/70
+  ✓ Symmetry: Shoulder width: 0.5043
+
+follow/22717.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 1/70 (1.4%)
+  ✓ Visibility: Avg visibility: 0.794
+  ✗ Movement: Very low movement variance: 0.087034 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=56, R=43
+  ✓ Pose Detection: Pose detections: 69/70
+  ✓ Symmetry: Shoulder width: 0.5049
+
+football/22806.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 1/70 (1.4%)
+  ✓ Visibility: Avg visibility: 0.766
+  ✗ Movement: Very low movement variance: 0.097738 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=48, R=46
+  ✓ Pose Detection: Pose detections: 69/70
+  ✓ Symmetry: Shoulder width: 0.5093
+
+football/22810.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 2/70 (2.9%)
+  ✓ Visibility: Avg visibility: 0.959
+  ✗ Movement: Very low movement variance: 0.073753 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=68, R=68
+  ✓ Pose Detection: Pose detections: 68/70
+  ✓ Symmetry: Shoulder width: 0.5038
+
+football/65755.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 1/70 (1.4%)
+  ✓ Visibility: Avg visibility: 0.910
+  ✗ Movement: Very low movement variance: 0.089641 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=42, R=48
+  ✓ Pose Detection: Pose detections: 69/70
+  ✓ Symmetry: Shoulder width: 0.5061
+
+form/23046.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 1/70 (1.4%)
+  ✓ Visibility: Avg visibility: 0.728
+  ✗ Movement: Very low movement variance: 0.096310 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=46, R=42
+  ✓ Pose Detection: Pose detections: 69/70
+  ✓ Symmetry: Shoulder width: 0.5096
+
+full/65792.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 1/70 (1.4%)
+  ✓ Visibility: Avg visibility: 0.795
+  ✗ Movement: Very low movement variance: 0.093125 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=0, R=37
+  ✓ Pose Detection: Pose detections: 69/70
+  ✓ Symmetry: Shoulder width: 0.5115
+
+good/25066.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 1/70 (1.4%)
+  ✓ Visibility: Avg visibility: 0.759
+  ✗ Movement: Very low movement variance: 0.093640 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=39, R=42
+  ✓ Pose Detection: Pose detections: 69/70
+  ✓ Symmetry: Shoulder width: 0.5037
+
+good/25072.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 2/70 (2.9%)
+  ✓ Visibility: Avg visibility: 0.900
+  ✗ Movement: Very low movement variance: 0.080716 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=68, R=68
+  ✓ Pose Detection: Pose detections: 68/70
+  ✓ Symmetry: Shoulder width: 0.5078
+
+good/65835.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 1/70 (1.4%)
+  ✓ Visibility: Avg visibility: 0.851
+  ✗ Movement: Very low movement variance: 0.087571 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=6, R=41
+  ✓ Pose Detection: Pose detections: 69/70
+  ✓ Symmetry: Shoulder width: 0.5073
+
+graduate/25326.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 2/70 (2.9%)
+  ✓ Visibility: Avg visibility: 0.752
+  ✗ Movement: Very low movement variance: 0.092963 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=53, R=49
+  ✓ Pose Detection: Pose detections: 68/70
+  ✓ Symmetry: Shoulder width: 0.5253
+
+graduate/25330.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 2/70 (2.9%)
+  ✓ Visibility: Avg visibility: 0.868
+  ✗ Movement: Very low movement variance: 0.065224 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=22, R=68
+  ✓ Pose Detection: Pose detections: 68/70
+  ✓ Symmetry: Shoulder width: 0.5135
+
+halloween/26259.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 2/70 (2.9%)
+  ✓ Visibility: Avg visibility: 0.944
+  ✗ Movement: Very low movement variance: 0.098001 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=68, R=68
+  ✓ Pose Detection: Pose detections: 68/70
+  ✓ Symmetry: Shoulder width: 0.5119
+
+help/27208.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 2/70 (2.9%)
+  ✓ Visibility: Avg visibility: 0.776
+  ✗ Movement: Very low movement variance: 0.098812 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=34, R=41
+  ✓ Pose Detection: Pose detections: 68/70
+  ✓ Symmetry: Shoulder width: 0.5135
+
+help/27209.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 2/70 (2.9%)
+  ✓ Visibility: Avg visibility: 0.711
+  ✗ Movement: Very low movement variance: 0.078547 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=43, R=48
+  ✓ Pose Detection: Pose detections: 68/70
+  ✓ Symmetry: Shoulder width: 0.5150
+
+help/27214.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 1/70 (1.4%)
+  ✓ Visibility: Avg visibility: 0.852
+  ✗ Movement: Very low movement variance: 0.080772 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=2, R=69
+  ✓ Pose Detection: Pose detections: 69/70
+  ✓ Symmetry: Shoulder width: 0.5052
+
+help/27215.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 1/70 (1.4%)
+  ✓ Visibility: Avg visibility: 0.892
+  ✗ Movement: Very low movement variance: 0.097829 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=0, R=69
+  ✓ Pose Detection: Pose detections: 69/70
+  ✓ Symmetry: Shoulder width: 0.5025
+
+how/28205.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 2/70 (2.9%)
+  ✓ Visibility: Avg visibility: 0.757
+  ✗ Movement: Very low movement variance: 0.097919 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=45, R=46
+  ✓ Pose Detection: Pose detections: 68/70
+  ✓ Symmetry: Shoulder width: 0.5065
+
+how/28211.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 1/70 (1.4%)
+  ✓ Visibility: Avg visibility: 0.908
+  ✗ Movement: Very low movement variance: 0.096042 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=69, R=69
+  ✓ Pose Detection: Pose detections: 69/70
+  ✓ Symmetry: Shoulder width: 0.5035
+
+inform/29649.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 2/70 (2.9%)
+  ✓ Visibility: Avg visibility: 0.836
+  ✗ Movement: Very low movement variance: 0.097629 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=45, R=44
+  ✓ Pose Detection: Pose detections: 68/70
+  ✓ Symmetry: Shoulder width: 0.5097
+
+interest/30153.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 1/70 (1.4%)
+  ✓ Visibility: Avg visibility: 0.624
+  ✗ Movement: Very low movement variance: 0.087656 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=12, R=29
+  ✓ Pose Detection: Pose detections: 69/70
+  ✓ Symmetry: Shoulder width: 0.5056
+
+interest/30154.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 1/70 (1.4%)
+  ✓ Visibility: Avg visibility: 0.636
+  ✗ Movement: Very low movement variance: 0.089168 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=9, R=38
+  ✓ Pose Detection: Pose detections: 69/70
+  ✓ Symmetry: Shoulder width: 0.5112
+
+later/32333.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 2/70 (2.9%)
+  ✓ Visibility: Avg visibility: 0.961
+  ✗ Movement: Very low movement variance: 0.076634 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=68, R=68
+  ✓ Pose Detection: Pose detections: 68/70
+  ✓ Symmetry: Shoulder width: 0.5055
+
+laugh/32381.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 1/70 (1.4%)
+  ✓ Visibility: Avg visibility: 0.835
+  ✗ Movement: Very low movement variance: 0.091695 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=41, R=46
+  ✓ Pose Detection: Pose detections: 69/70
+  ✓ Symmetry: Shoulder width: 0.5094
+
+letter/32953.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 6/70 (8.6%)
+  ✓ Visibility: Avg visibility: 0.965
+  ✗ Movement: Very low movement variance: 0.095966 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=64, R=64
+  ✓ Pose Detection: Pose detections: 64/70
+  ✓ Symmetry: Shoulder width: 0.5078
+
+letter/32954.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 6/70 (8.6%)
+  ✓ Visibility: Avg visibility: 0.966
+  ✗ Movement: Very low movement variance: 0.084698 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=64, R=64
+  ✓ Pose Detection: Pose detections: 64/70
+  ✓ Symmetry: Shoulder width: 0.5050
+
+letter/32955.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 3/70 (4.3%)
+  ✓ Visibility: Avg visibility: 0.965
+  ✗ Movement: Very low movement variance: 0.091781 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=67, R=67
+  ✓ Pose Detection: Pose detections: 67/70
+  ✓ Symmetry: Shoulder width: 0.5020
+
+list/33473.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 1/70 (1.4%)
+  ✓ Visibility: Avg visibility: 0.731
+  ✗ Movement: Very low movement variance: 0.097601 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=41, R=41
+  ✓ Pose Detection: Pose detections: 69/70
+  ✓ Symmetry: Shoulder width: 0.5209
+
+make/34581.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 1/70 (1.4%)
+  ✓ Visibility: Avg visibility: 0.846
+  ✗ Movement: Very low movement variance: 0.099027 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=55, R=51
+  ✓ Pose Detection: Pose detections: 69/70
+  ✓ Symmetry: Shoulder width: 0.5043
+
+meet/35517.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 1/70 (1.4%)
+  ✓ Visibility: Avg visibility: 0.944
+  ✗ Movement: Very low movement variance: 0.057439 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=69, R=56
+  ✓ Pose Detection: Pose detections: 69/70
+  ✓ Symmetry: Shoulder width: 0.5114
+
+minute/36248.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 3/70 (4.3%)
+  ✓ Visibility: Avg visibility: 0.852
+  ✗ Movement: Very low movement variance: 0.047269 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=44, R=43
+  ✓ Pose Detection: Pose detections: 67/70
+  ✓ Symmetry: Shoulder width: 0.5037
+
+minute/36249.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 5/70 (7.1%)
+  ✓ Visibility: Avg visibility: 0.907
+  ✗ Movement: Very low movement variance: 0.074048 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=65, R=65
+  ✓ Pose Detection: Pose detections: 65/70
+  ✓ Symmetry: Shoulder width: 0.5128
+
+minute/66128.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 1/70 (1.4%)
+  ✓ Visibility: Avg visibility: 0.829
+  ✗ Movement: Very low movement variance: 0.094350 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=48, R=44
+  ✓ Pose Detection: Pose detections: 69/70
+  ✓ Symmetry: Shoulder width: 0.5035
+
+near/37784.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 1/70 (1.4%)
+  ✓ Visibility: Avg visibility: 0.675
+  ✗ Movement: Very low movement variance: 0.096960 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=28, R=25
+  ✓ Pose Detection: Pose detections: 69/70
+  ✓ Symmetry: Shoulder width: 0.5129
+
+necklace/37859.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 1/70 (1.4%)
+  ✓ Visibility: Avg visibility: 0.952
+  ✗ Movement: Very low movement variance: 0.093726 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=42, R=69
+  ✓ Pose Detection: Pose detections: 69/70
+  ✓ Symmetry: Shoulder width: 0.5064
+
+orange/40121.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 2/70 (2.9%)
+  ✓ Visibility: Avg visibility: 0.853
+  ✗ Movement: Very low movement variance: 0.099977 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=0, R=68
+  ✓ Pose Detection: Pose detections: 68/70
+  ✓ Symmetry: Shoulder width: 0.5179
+
+perspective/42247.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 1/70 (1.4%)
+  ✓ Visibility: Avg visibility: 0.804
+  ✗ Movement: Very low movement variance: 0.093217 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=55, R=51
+  ✓ Pose Detection: Pose detections: 69/70
+  ✓ Symmetry: Shoulder width: 0.5065
+
+perspective/42251.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 1/70 (1.4%)
+  ✓ Visibility: Avg visibility: 0.960
+  ✗ Movement: Very low movement variance: 0.099152 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=69, R=69
+  ✓ Pose Detection: Pose detections: 69/70
+  ✓ Symmetry: Shoulder width: 0.5142
+
+point/43443.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 1/70 (1.4%)
+  ✓ Visibility: Avg visibility: 0.684
+  ✗ Movement: Very low movement variance: 0.098085 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=37, R=36
+  ✓ Pose Detection: Pose detections: 69/70
+  ✓ Symmetry: Shoulder width: 0.5130
+
+point/43447.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 1/70 (1.4%)
+  ✓ Visibility: Avg visibility: 0.816
+  ✗ Movement: Very low movement variance: 0.097274 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=46, R=45
+  ✓ Pose Detection: Pose detections: 69/70
+  ✓ Symmetry: Shoulder width: 0.5076
+
+practice/44083.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 2/70 (2.9%)
+  ✓ Visibility: Avg visibility: 0.800
+  ✗ Movement: Very low movement variance: 0.097554 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=43, R=39
+  ✓ Pose Detection: Pose detections: 68/70
+  ✓ Symmetry: Shoulder width: 0.5034
+
+practice/44088.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 2/70 (2.9%)
+  ✓ Visibility: Avg visibility: 0.901
+  ✗ Movement: Very low movement variance: 0.099212 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=68, R=68
+  ✓ Pose Detection: Pose detections: 68/70
+  ✓ Symmetry: Shoulder width: 0.5107
+
+sandwich/49245.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 1/70 (1.4%)
+  ✓ Visibility: Avg visibility: 0.581
+  ✗ Movement: Very low movement variance: 0.096109 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=37, R=1
+  ✓ Pose Detection: Pose detections: 69/70
+  ✓ Symmetry: Shoulder width: 0.5040
+
+sandwich/49247.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 1/70 (1.4%)
+  ✓ Visibility: Avg visibility: 0.806
+  ✗ Movement: Very low movement variance: 0.076366 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=52, R=45
+  ✓ Pose Detection: Pose detections: 69/70
+  ✓ Symmetry: Shoulder width: 0.5085
+
+sandwich/49248.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 1/70 (1.4%)
+  ✓ Visibility: Avg visibility: 0.766
+  ✗ Movement: Very low movement variance: 0.082659 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=48, R=49
+  ✓ Pose Detection: Pose detections: 69/70
+  ✓ Symmetry: Shoulder width: 0.5103
+
+sandwich/49250.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 2/70 (2.9%)
+  ✓ Visibility: Avg visibility: 0.949
+  ✗ Movement: Very low movement variance: 0.078227 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=68, R=68
+  ✓ Pose Detection: Pose detections: 68/70
+  ✓ Symmetry: Shoulder width: 0.5117
+
+sandwich/49251.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 3/70 (4.3%)
+  ✓ Visibility: Avg visibility: 0.963
+  ✗ Movement: Very low movement variance: 0.055502 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=67, R=67
+  ✓ Pose Detection: Pose detections: 67/70
+  ✓ Symmetry: Shoulder width: 0.5054
+
+sandwich/49252.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 2/70 (2.9%)
+  ✓ Visibility: Avg visibility: 0.936
+  ✗ Movement: Very low movement variance: 0.048811 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=0, R=68
+  ✓ Pose Detection: Pose detections: 68/70
+  ✓ Symmetry: Shoulder width: 0.5088
+
+sandwich/66423.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 1/70 (1.4%)
+  ✓ Visibility: Avg visibility: 0.773
+  ✗ Movement: Very low movement variance: 0.096306 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=46, R=39
+  ✓ Pose Detection: Pose detections: 69/70
+  ✓ Symmetry: Shoulder width: 0.5128
+
+sandwich/66424.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 1/70 (1.4%)
+  ✓ Visibility: Avg visibility: 0.773
+  ✗ Movement: Very low movement variance: 0.096306 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=46, R=39
+  ✓ Pose Detection: Pose detections: 69/70
+  ✓ Symmetry: Shoulder width: 0.5128
+
+school/49597.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 1/70 (1.4%)
+  ✓ Visibility: Avg visibility: 0.735
+  ✗ Movement: Very low movement variance: 0.098027 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=29, R=25
+  ✓ Pose Detection: Pose detections: 69/70
+  ✓ Symmetry: Shoulder width: 0.5114
+
+school/49599.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 1/70 (1.4%)
+  ✓ Visibility: Avg visibility: 0.698
+  ✗ Movement: Very low movement variance: 0.095992 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=28, R=47
+  ✓ Pose Detection: Pose detections: 69/70
+  ✓ Symmetry: Shoulder width: 0.5036
+
+school/49600.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 2/70 (2.9%)
+  ✓ Visibility: Avg visibility: 0.661
+  ✗ Movement: Very low movement variance: 0.093441 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=30, R=44
+  ✓ Pose Detection: Pose detections: 68/70
+  ✓ Symmetry: Shoulder width: 0.5037
+
+score/49697.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 1/70 (1.4%)
+  ✓ Visibility: Avg visibility: 0.960
+  ✗ Movement: Very low movement variance: 0.083840 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=69, R=29
+  ✓ Pose Detection: Pose detections: 69/70
+  ✓ Symmetry: Shoulder width: 0.5103
+
+score/49699.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 2/70 (2.9%)
+  ✓ Visibility: Avg visibility: 0.842
+  ✗ Movement: Very low movement variance: 0.098011 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=47, R=68
+  ✓ Pose Detection: Pose detections: 68/70
+  ✓ Symmetry: Shoulder width: 0.5073
+
+score/49700.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 2/70 (2.9%)
+  ✓ Visibility: Avg visibility: 0.842
+  ✗ Movement: Very low movement variance: 0.098011 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=47, R=68
+  ✓ Pose Detection: Pose detections: 68/70
+  ✓ Symmetry: Shoulder width: 0.5073
+
+show/51353.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 3/70 (4.3%)
+  ✓ Visibility: Avg visibility: 0.954
+  ✗ Movement: Very low movement variance: 0.081715 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=67, R=67
+  ✓ Pose Detection: Pose detections: 67/70
+  ✓ Symmetry: Shoulder width: 0.5054
+
+show/51356.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 2/70 (2.9%)
+  ✓ Visibility: Avg visibility: 0.961
+  ✗ Movement: Very low movement variance: 0.086711 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=68, R=68
+  ✓ Pose Detection: Pose detections: 68/70
+  ✓ Symmetry: Shoulder width: 0.5068
+
+soon/53296.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 1/70 (1.4%)
+  ✓ Visibility: Avg visibility: 0.784
+  ✗ Movement: Very low movement variance: 0.099773 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=46, R=45
+  ✓ Pose Detection: Pose detections: 69/70
+  ✓ Symmetry: Shoulder width: 0.5117
+
+tall/56848.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 2/70 (2.9%)
+  ✓ Visibility: Avg visibility: 0.945
+  ✗ Movement: Very low movement variance: 0.069584 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=68, R=68
+  ✓ Pose Detection: Pose detections: 68/70
+  ✓ Symmetry: Shoulder width: 0.5082
+
+tell/57287.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 2/70 (2.9%)
+  ✓ Visibility: Avg visibility: 0.790
+  ✗ Movement: Very low movement variance: 0.098505 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=0, R=68
+  ✓ Pose Detection: Pose detections: 68/70
+  ✓ Symmetry: Shoulder width: 0.5121
+
+toast/58657.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 3/70 (4.3%)
+  ✓ Visibility: Avg visibility: 0.926
+  ✗ Movement: Very low movement variance: 0.081176 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=67, R=67
+  ✓ Pose Detection: Pose detections: 67/70
+  ✓ Symmetry: Shoulder width: 0.5042
+
+town/59151.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 1/70 (1.4%)
+  ✓ Visibility: Avg visibility: 0.785
+  ✗ Movement: Very low movement variance: 0.094907 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=46, R=47
+  ✓ Pose Detection: Pose detections: 69/70
+  ✓ Symmetry: Shoulder width: 0.5115
+
+town/59153.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 1/70 (1.4%)
+  ✓ Visibility: Avg visibility: 0.945
+  ✗ Movement: Very low movement variance: 0.081017 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=69, R=69
+  ✓ Pose Detection: Pose detections: 69/70
+  ✓ Symmetry: Shoulder width: 0.5068
+
+train/59314.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 5/70 (7.1%)
+  ✓ Visibility: Avg visibility: 0.964
+  ✗ Movement: Very low movement variance: 0.077907 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=65, R=65
+  ✓ Pose Detection: Pose detections: 65/70
+  ✓ Symmetry: Shoulder width: 0.5034
+
+train/59316.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 2/70 (2.9%)
+  ✓ Visibility: Avg visibility: 0.901
+  ✗ Movement: Very low movement variance: 0.099212 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=68, R=68
+  ✓ Pose Detection: Pose detections: 68/70
+  ✓ Symmetry: Shoulder width: 0.5107
+
+visit/61805.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 1/70 (1.4%)
+  ✓ Visibility: Avg visibility: 0.641
+  ✗ Movement: Very low movement variance: 0.090221 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=23, R=27
+  ✓ Pose Detection: Pose detections: 69/70
+  ✓ Symmetry: Shoulder width: 0.5116
+
+visit/61812.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 2/70 (2.9%)
+  ✓ Visibility: Avg visibility: 0.957
+  ✗ Movement: Very low movement variance: 0.090629 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=68, R=68
+  ✓ Pose Detection: Pose detections: 68/70
+  ✓ Symmetry: Shoulder width: 0.5123
+
+voice/61920.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 1/70 (1.4%)
+  ✓ Visibility: Avg visibility: 0.808
+  ✗ Movement: Very low movement variance: 0.095885 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=0, R=69
+  ✓ Pose Detection: Pose detections: 69/70
+  ✓ Symmetry: Shoulder width: 0.5108
+
+wait/62107.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 1/70 (1.4%)
+  ✓ Visibility: Avg visibility: 0.883
+  ✗ Movement: Very low movement variance: 0.098319 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=69, R=30
+  ✓ Pose Detection: Pose detections: 69/70
+  ✓ Symmetry: Shoulder width: 0.5184
+
+weekend/62736.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 8/70 (11.4%)
+  ✓ Visibility: Avg visibility: 0.790
+  ✗ Movement: Very low movement variance: 0.089438 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=62, R=28
+  ✓ Pose Detection: Pose detections: 62/70
+  ✓ Symmetry: Shoulder width: 0.5084
+
+what/62979.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 1/70 (1.4%)
+  ✓ Visibility: Avg visibility: 0.929
+  ✗ Movement: Very low movement variance: 0.091180 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=69, R=67
+  ✓ Pose Detection: Pose detections: 69/70
+  ✓ Symmetry: Shoulder width: 0.5017
+
+work/63793.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 1/70 (1.4%)
+  ✓ Visibility: Avg visibility: 0.794
+  ✗ Movement: Very low movement variance: 0.097135 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=50, R=51
+  ✓ Pose Detection: Pose detections: 69/70
+  ✓ Symmetry: Shoulder width: 0.5187
+
+write/64061.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 2/70 (2.9%)
+  ✓ Visibility: Avg visibility: 0.783
+  ✗ Movement: Very low movement variance: 0.097051 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=40, R=43
+  ✓ Pose Detection: Pose detections: 68/70
+  ✓ Symmetry: Shoulder width: 0.5128
+
+year/64209.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 1/70 (1.4%)
+  ✓ Visibility: Avg visibility: 0.586
+  ✗ Movement: Very low movement variance: 0.091945 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=30, R=25
+  ✓ Pose Detection: Pose detections: 69/70
+  ✓ Symmetry: Shoulder width: 0.5138
+
+year/64218.npy:
+  ✓ Shape: OK
+  ✓ NaN/Inf: OK
+  ✓ Coordinate Range: OK
+  ✓ Zero Frames: Zero frames: 3/70 (4.3%)
+  ✓ Visibility: Avg visibility: 0.828
+  ✗ Movement: Very low movement variance: 0.083660 (likely frozen video)
+  ✓ Hand Detection: Hand detections: L=46, R=67
+  ✓ Pose Detection: Pose detections: 67/70
+  ✓ Symmetry: Shoulder width: 0.5058

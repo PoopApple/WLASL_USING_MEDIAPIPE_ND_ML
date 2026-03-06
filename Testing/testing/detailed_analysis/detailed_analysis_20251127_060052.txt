@@ -1,0 +1,90 @@
+================================================================================
+COMPREHENSIVE MODEL ANALYSIS REPORT
+================================================================================
+
+Generated: 2025-11-27 06:00:52
+Total Models Analyzed: 2
+
+================================================================================
+OVERALL COMPARISON
+================================================================================
+
+Rank   Model                                    Acc      Top-3    Top-5    F1       Loss    
+--------------------------------------------------------------------------------
+1      BiGRU_Balanced_Regularization             47.37%  71.35%  77.78% 0.4391 2.9733
+2      Lightweight_BiLSTM_Balanced_Regularization  38.89%  61.40%  69.88% 0.3472 3.2925
+
+
+================================================================================
+DETAILED PER-MODEL ANALYSIS
+================================================================================
+
+
+================================================================================
+Model: BiGRU_Balanced_Regularization
+================================================================================
+
+Overall Metrics:
+  Accuracy:              47.37%
+  Top-3 Accuracy:        71.35%
+  Top-5 Accuracy:        77.78%
+  Loss:                  2.9733
+
+Macro-averaged Metrics:
+  Precision:             0.4670
+  Recall:                0.4795
+  F1-Score:              0.4397
+
+Weighted-averaged Metrics:
+  Precision:             0.4696
+  Recall:                0.4737
+  F1-Score:              0.4391
+
+Top 5 Best Performing Classes:
+  wow                  F1: 1.0000 (n=2)
+  water                F1: 1.0000 (n=2)
+  room                 F1: 1.0000 (n=2)
+  silly                F1: 1.0000 (n=2)
+  country              F1: 1.0000 (n=2)
+
+Top 5 Worst Performing Classes:
+  africa               F1: 0.0000 (n=2)
+  appointment          F1: 0.0000 (n=2)
+  bar                  F1: 0.0000 (n=2)
+  balloon              F1: 0.0000 (n=2)
+  basketball           F1: 0.0000 (n=2)
+
+
+================================================================================
+Model: Lightweight_BiLSTM_Balanced_Regularization
+================================================================================
+
+Overall Metrics:
+  Accuracy:              38.89%
+  Top-3 Accuracy:        61.40%
+  Top-5 Accuracy:        69.88%
+  Loss:                  3.2925
+
+Macro-averaged Metrics:
+  Precision:             0.3504
+  Recall:                0.3928
+  F1-Score:              0.3451
+
+Weighted-averaged Metrics:
+  Precision:             0.3549
+  Recall:                0.3889
+  F1-Score:              0.3472
+
+Top 5 Best Performing Classes:
+  theory               F1: 1.0000 (n=2)
+  son                  F1: 1.0000 (n=2)
+  black                F1: 1.0000 (n=2)
+  animal               F1: 1.0000 (n=2)
+  day                  F1: 1.0000 (n=2)
+
+Top 5 Worst Performing Classes:
+  africa               F1: 0.0000 (n=2)
+  appointment          F1: 0.0000 (n=2)
+  basketball           F1: 0.0000 (n=2)
+  balloon              F1: 0.0000 (n=2)
+  bar                  F1: 0.0000 (n=2)

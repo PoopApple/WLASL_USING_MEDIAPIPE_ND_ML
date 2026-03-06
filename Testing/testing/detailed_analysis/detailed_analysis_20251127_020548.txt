@@ -1,0 +1,270 @@
+================================================================================
+COMPREHENSIVE MODEL ANALYSIS REPORT
+================================================================================
+
+Generated: 2025-11-27 02:05:48
+Total Models Analyzed: 7
+
+================================================================================
+OVERALL COMPARISON
+================================================================================
+
+Rank   Model                                    Acc      Top-3    Top-5    F1       Loss    
+--------------------------------------------------------------------------------
+1      BiGRU                                     36.89%  57.77%  66.26% 0.3453 4.5984
+2      BiGRU_Balanced_Regularization             34.71%  56.80%  66.26% 0.3268 5.2470
+3      Small_Transformer                         32.52%  50.97%  61.17% 0.2822 5.5349
+4      Lightweight_BiLSTM                        27.43%  48.30%  60.68% 0.2492 4.9581
+5      Lightweight_BiLSTM_Balanced_Regularization  24.27%  41.50%  50.97% 0.2212 6.6395
+6      3D_CNN                                    19.66%  33.25%  45.87% 0.1837 13.2496
+7      Hybrid_CNN_LSTM                            0.49%   1.46%   2.43% 0.0000 5.3182
+
+
+================================================================================
+DETAILED PER-MODEL ANALYSIS
+================================================================================
+
+
+================================================================================
+Model: BiGRU
+================================================================================
+
+Overall Metrics:
+  Accuracy:              36.89%
+  Top-3 Accuracy:        57.77%
+  Top-5 Accuracy:        66.26%
+  Loss:                  4.5984
+
+Macro-averaged Metrics:
+  Precision:             0.3633
+  Recall:                0.3685
+  F1-Score:              0.3416
+
+Weighted-averaged Metrics:
+  Precision:             0.3692
+  Recall:                0.3689
+  F1-Score:              0.3453
+
+Top 5 Best Performing Classes:
+  son                  F1: 1.0000 (n=2)
+  sweet                F1: 1.0000 (n=2)
+  ugly                 F1: 1.0000 (n=2)
+  water                F1: 1.0000 (n=2)
+  daughter             F1: 1.0000 (n=2)
+
+Top 5 Worst Performing Classes:
+  accident             F1: 0.0000 (n=2)
+  ago                  F1: 0.0000 (n=2)
+  apple                F1: 0.0000 (n=2)
+  bad                  F1: 0.0000 (n=2)
+  balance              F1: 0.0000 (n=2)
+
+
+================================================================================
+Model: BiGRU_Balanced_Regularization
+================================================================================
+
+Overall Metrics:
+  Accuracy:              34.71%
+  Top-3 Accuracy:        56.80%
+  Top-5 Accuracy:        66.26%
+  Loss:                  5.2470
+
+Macro-averaged Metrics:
+  Precision:             0.3511
+  Recall:                0.3497
+  F1-Score:              0.3271
+
+Weighted-averaged Metrics:
+  Precision:             0.3519
+  Recall:                0.3471
+  F1-Score:              0.3268
+
+Top 5 Best Performing Classes:
+  son                  F1: 1.0000 (n=2)
+  ugly                 F1: 1.0000 (n=2)
+  water                F1: 1.0000 (n=2)
+  weekend              F1: 1.0000 (n=2)
+  shock                F1: 1.0000 (n=2)
+
+Top 5 Worst Performing Classes:
+  accident             F1: 0.0000 (n=2)
+  appointment          F1: 0.0000 (n=2)
+  bad                  F1: 0.0000 (n=2)
+  argue                F1: 0.0000 (n=2)
+  balance              F1: 0.0000 (n=2)
+
+
+================================================================================
+Model: Small_Transformer
+================================================================================
+
+Overall Metrics:
+  Accuracy:              32.52%
+  Top-3 Accuracy:        50.97%
+  Top-5 Accuracy:        61.17%
+  Loss:                  5.5349
+
+Macro-averaged Metrics:
+  Precision:             0.2793
+  Recall:                0.3227
+  F1-Score:              0.2781
+
+Weighted-averaged Metrics:
+  Precision:             0.2865
+  Recall:                0.3252
+  F1-Score:              0.2822
+
+Top 5 Best Performing Classes:
+  wow                  F1: 1.0000 (n=2)
+  son                  F1: 1.0000 (n=2)
+  good                 F1: 1.0000 (n=2)
+  great                F1: 1.0000 (n=2)
+  chat                 F1: 1.0000 (n=2)
+
+Top 5 Worst Performing Classes:
+  accident             F1: 0.0000 (n=2)
+  add                  F1: 0.0000 (n=2)
+  ago                  F1: 0.0000 (n=2)
+  alone                F1: 0.0000 (n=2)
+  appointment          F1: 0.0000 (n=2)
+
+
+================================================================================
+Model: Lightweight_BiLSTM
+================================================================================
+
+Overall Metrics:
+  Accuracy:              27.43%
+  Top-3 Accuracy:        48.30%
+  Top-5 Accuracy:        60.68%
+  Loss:                  4.9581
+
+Macro-averaged Metrics:
+  Precision:             0.2567
+  Recall:                0.2712
+  F1-Score:              0.2458
+
+Weighted-averaged Metrics:
+  Precision:             0.2621
+  Recall:                0.2743
+  F1-Score:              0.2492
+
+Top 5 Best Performing Classes:
+  son                  F1: 1.0000 (n=2)
+  upset                F1: 1.0000 (n=2)
+  dry                  F1: 1.0000 (n=2)
+  man                  F1: 1.0000 (n=2)
+  daughter             F1: 1.0000 (n=2)
+
+Top 5 Worst Performing Classes:
+  accident             F1: 0.0000 (n=2)
+  add                  F1: 0.0000 (n=2)
+  africa               F1: 0.0000 (n=2)
+  ago                  F1: 0.0000 (n=2)
+  animal               F1: 0.0000 (n=1)
+
+
+================================================================================
+Model: Lightweight_BiLSTM_Balanced_Regularization
+================================================================================
+
+Overall Metrics:
+  Accuracy:              24.27%
+  Top-3 Accuracy:        41.50%
+  Top-5 Accuracy:        50.97%
+  Loss:                  6.6395
+
+Macro-averaged Metrics:
+  Precision:             0.2379
+  Recall:                0.2435
+  F1-Score:              0.2206
+
+Weighted-averaged Metrics:
+  Precision:             0.2400
+  Recall:                0.2427
+  F1-Score:              0.2212
+
+Top 5 Best Performing Classes:
+  secretary            F1: 1.0000 (n=2)
+  headache             F1: 1.0000 (n=2)
+  country              F1: 1.0000 (n=2)
+  son                  F1: 0.8000 (n=2)
+  man                  F1: 0.8000 (n=2)
+
+Top 5 Worst Performing Classes:
+  accident             F1: 0.0000 (n=2)
+  africa               F1: 0.0000 (n=2)
+  ago                  F1: 0.0000 (n=2)
+  animal               F1: 0.0000 (n=1)
+  appointment          F1: 0.0000 (n=2)
+
+
+================================================================================
+Model: 3D_CNN
+================================================================================
+
+Overall Metrics:
+  Accuracy:              19.66%
+  Top-3 Accuracy:        33.25%
+  Top-5 Accuracy:        45.87%
+  Loss:                  13.2496
+
+Macro-averaged Metrics:
+  Precision:             0.2044
+  Recall:                0.1969
+  F1-Score:              0.1825
+
+Weighted-averaged Metrics:
+  Precision:             0.2082
+  Recall:                0.1966
+  F1-Score:              0.1837
+
+Top 5 Best Performing Classes:
+  good                 F1: 1.0000 (n=2)
+  country              F1: 0.8000 (n=2)
+  upset                F1: 0.6667 (n=2)
+  walk                 F1: 0.6667 (n=2)
+  soon                 F1: 0.6667 (n=2)
+
+Top 5 Worst Performing Classes:
+  accident             F1: 0.0000 (n=2)
+  add                  F1: 0.0000 (n=2)
+  africa               F1: 0.0000 (n=2)
+  ago                  F1: 0.0000 (n=2)
+  animal               F1: 0.0000 (n=1)
+
+
+================================================================================
+Model: Hybrid_CNN_LSTM
+================================================================================
+
+Overall Metrics:
+  Accuracy:              0.49%
+  Top-3 Accuracy:        1.46%
+  Top-5 Accuracy:        2.43%
+  Loss:                  5.3182
+
+Macro-averaged Metrics:
+  Precision:             0.0000
+  Recall:                0.0049
+  F1-Score:              0.0000
+
+Weighted-averaged Metrics:
+  Precision:             0.0000
+  Recall:                0.0049
+  F1-Score:              0.0000
+
+Top 5 Best Performing Classes:
+  woman                F1: 0.0097 (n=2)
+  yesterday            F1: 0.0000 (n=2)
+  year                 F1: 0.0000 (n=2)
+  yes                  F1: 0.0000 (n=2)
+  write                F1: 0.0000 (n=2)
+
+Top 5 Worst Performing Classes:
+  accident             F1: 0.0000 (n=2)
+  add                  F1: 0.0000 (n=2)
+  africa               F1: 0.0000 (n=2)
+  ago                  F1: 0.0000 (n=2)
+  alone                F1: 0.0000 (n=2)

@@ -10,12 +10,15 @@ dataset_removed/
 
 gte9_dataset/
 gte9_landmarks/
-
+gte9_landmarks_removed*/
 smaller_dataset_landmarks2/
 
 test_vid/*.mp4
 
 *.mp4
+*.npy
+*.zip
+*.keras
 
 gte9_landmarks/
 gte9_landmarks_old/
@@ -54,5 +57,3 @@ dist/
 build/
 *.egg-info/
 
-# Dependencies
-node_modules/

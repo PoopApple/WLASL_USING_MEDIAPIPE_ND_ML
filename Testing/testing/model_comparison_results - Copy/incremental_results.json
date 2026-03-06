@@ -1,0 +1,14 @@
+{
+  "Lightweight_BiLSTM_Balanced_Regularization": {
+    "accuracy": 0.3274853825569153,
+    "loss": 3.5841193199157715,
+    "top5": 0.6461988091468811,
+    "train_accuracy": 0.6927217841148376
+  },
+  "BiGRU_Balanced_Regularization": {
+    "accuracy": 0.45614033937454224,
+    "loss": 3.085139036178589,
+    "top5": 0.7573099136352539,
+    "train_accuracy": 0.844745934009552
+  }
+}
