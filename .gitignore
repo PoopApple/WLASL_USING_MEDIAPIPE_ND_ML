@@ -8,13 +8,22 @@ all_videos/
 
 dataset_removed/
 
+*.webm
+
+*.Identifier
+*.webm
+*.mp4
+*.pptx
+*.pdf
+
+
 gte9_dataset/
 gte9_landmarks/
 gte9_landmarks_removed*/
 smaller_dataset_landmarks2/
 
 test_vid/*.mp4
-
+*.npz
 *.mp4
 *.npy
 *.zip

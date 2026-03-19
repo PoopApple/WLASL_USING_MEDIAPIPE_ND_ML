@@ -1,0 +1,7 @@
+need to flip the images to ensure both ways of doing single handed signs is valid
+
+in normalise_data.py
+  save the normalised data
+  flip the normalised data and save it too
+
+  then finally run bilstm/bigru on it

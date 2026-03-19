@@ -1,0 +1,29 @@
+
+Stats of dataset1:
+  Frames
+    Average = 83.74423710208562
+    Median = 75.0
+    Min = 10
+    Std Dev = 37.9081458726649
+    Sample Std Dev = 37.91508303913759
+    Percentiles =>
+      10% = 48.0
+      20% = 55.0
+      30% = 62.0
+      40% = 69.0
+      50% = 75.0
+      60% = 82.0
+      70% = 90.0
+      80% = 103.0
+      85% = 116.0
+      90% = 136.0
+      95% = 162.4
+      99% = 204.0
+
+  Num of vids = 106
+
+
+
+so normalised array will have 85 frames
+
+

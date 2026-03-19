@@ -1,0 +1,22 @@
+
+pushd $(dirname $(uv run python -c 'print(__import__("tensorflow").__file__)'))
+ln -svf ../nvidia/*/lib/*.so* .
+popd
+
+
+
+agar isse na ho toh:
+
+SP_DIR="$(uv run python -c 'import site; print(site.getsitepackages()[0])')"
+
+echo "LD_LIBRARY_PATH=\"${SP_DIR}/nvidia/cudnn/lib:${SP_DIR}/nvidia/cublas/lib:${SP_DIR}/nvidia/cusolver/lib:${SP_DIR}/nvidia/cuda_runtime/lib:${SP_DIR}/nvidia/cuda_nvrtc/lib:${SP_DIR}/nvidia/cuda_cupti/lib\"" >> .env
+
+
+
+put this:
+export UV_ENV_FILE=".env"
+
+
+into .bashrc
+
+
