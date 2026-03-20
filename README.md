@@ -26,7 +26,8 @@ A lightweight, word-level American Sign Language (ASL) recognition system optimi
 The final production model utilizes a Bidirectional GRU to capture forward and backward temporal dependencies in the sign sequences.
 
 1. **Input & Masking:** `InputLayer` -> `Reshape` -> `Input Masking`
-2. **Temporal Processing:** * `Bidirectional(GRU)` (512 units)
+2. **Temporal Processing:**
+   * `Bidirectional(GRU)` (512 units)
    * `Bidirectional(GRU)` (256 units)
 3. **Regularization:** `Dropout` layer to prevent overfitting.
 4. **Classification:** `Dense(ReLU)` -> `Dense(Softmax)` mapping to 106 classes.
@@ -41,5 +42,5 @@ An automated evaluation script (`report.py`) generates comprehensive side-by-sid
 
 1. Clone the repository:
    ```bash
-   git clone [https://github.com/yourusername/asl-recognition.git](https://github.com/yourusername/asl-recognition.git)
-   cd asl-recognition
+   git clone [https://github.com/PoopApple/ASL_recognition.git](https://github.com/PoopApple/ASL_recognition.git)
+   cd ASL_recognition
