@@ -42,5 +42,5 @@ An automated evaluation script (`report.py`) generates comprehensive side-by-sid
 
 1. Clone the repository:
    ```bash
-   git clone [https://github.com/PoopApple/ASL_recognition.git](https://github.com/PoopApple/ASL_recognition.git)
+   git clone https://github.com/PoopApple/ASL_recognition.git
    cd ASL_recognition
