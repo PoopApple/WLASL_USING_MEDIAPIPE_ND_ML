@@ -1,0 +1,6 @@
+=============================================
+TODO LIST & REMINDERS
+=============================================
+
+1. [ ] Check the final accuracies and read the generated report for `bigru_bigger_v1` trained on the 1000-word dataset.
+2. [ ] Check the final accuracies and read the generated report for `bigru_v3` trained on the 500-word dataset.

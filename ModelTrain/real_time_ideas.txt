@@ -1,0 +1,36 @@
+# Real-Time Continuous Sign Language Recognition (CSLR) Roadmap
+
+This document outlines the architectural plan for transitioning from an isolated word recognizer (bigru_bigger_v1 / bigru_v3) to a full sentence decoder.
+
+## Phase 1: The Model Architecture Shift
+Currently, the model takes a 128-frame video and predicts a single label. For full sentences, the video will be an unsegmented continuous stream.
+
+**Option A: Sliding Window (Easiest)**
+- Run the current Isolated Sign model over the live video in overlapping chunks (e.g., frames 0-128, then 30-158, etc.).
+- This yields a continuous stream of probabilities over time.
+- **Pros:** Requires zero retraining. You can use the exact model you have now.
+- **Cons:** Computationally expensive; struggles to determine exactly where a word begins and ends.
+
+**Option B: CTC Loss (Industry Standard)**
+- Remove the final flattening/pooling step of the BiGRU so it outputs a probability distribution for *every single frame*.
+- Change the loss function from `SparseCategoricalCrossentropy` to `CTCLoss` (Connectionist Temporal Classification).
+- CTC allows you to train the model on full sentences (e.g., passing a 500-frame video and the label `["I", "WANT", "APPLE"]`) without needing to manually label which frame belongs to which word.
+- **Pros:** The golden standard for speech and sign recognition.
+- **Cons:** Requires retraining the model on a dataset containing full sentences.
+
+## Phase 2: Decoding the Output
+Once the model generates a sequence of probabilities over time, you cannot simply take the most likely prediction at each frame (argmax), as this leads to flickering and nonsensical sequences.
+
+**Beam Search**
+- Instead of taking the single best path, Beam Search explores the top *K* most likely paths simultaneously.
+- It dynamically prunes bad paths as new frames come in.
+
+## Phase 3: The Language Model (The Secret Weapon)
+Beam Search is powerful, but it relies purely on vision. Adding a Language Model (LM) creates a robust hybrid system.
+
+- As Beam Search explores possible sentence paths, it multiplies the vision probabilities by grammatical probabilities from an LM (like an N-gram model or a lightweight Transformer/BERT).
+- **Example:** If the vision model is unsure between `"I AM GOING"` and `"EYE AM GOING"`, the LM will massively penalize the latter because it violates English grammar, instantly correcting the sentence.
+- This acts as an auto-correct for the vision system.
+
+## Summary Pipeline
+Live Video -> Landmark Extraction -> BiGRU Spatial/Temporal Encoding -> CTC Probabilities -> Beam Search + Language Model -> Valid Text Sentence

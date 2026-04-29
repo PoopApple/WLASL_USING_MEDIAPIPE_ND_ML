@@ -222,15 +222,15 @@ def process_all(
 
 
 if __name__ == "__main__":
-    dataset_path = "./dataset2.0/landmarks/"
-    op_dataset_path = "./dataset2.0/landmarks_npz/"
+    dataset_path = "./dataset3.0/landmarks/"
+    op_dataset_path = "./dataset3.0/landmarks_npz/"
 
-    process_one("./test_actor.npy", "./test_actor.npz")
+    # process_one("./test_actor.npy", "./test_actor.npz")
 
-    exit()
-    # process_all(dataset_path=dataset_path, op_dataset_path=op_dataset_path, flip=False)
-    # process_all(dataset_path=dataset_path, op_dataset_path=op_dataset_path, flip=True)
-    # exit(0)
+    # exit()
+    process_all(dataset_path=dataset_path, op_dataset_path=op_dataset_path, flip=False)
+    process_all(dataset_path=dataset_path, op_dataset_path=op_dataset_path, flip=True)
+    exit(0)
     # arr = np.load("./dataset1.0/landmarks/8HOUR/8HOUR_07243138866452936-8 HOUR.npy")
     # # flipped = flip_raw_arr(arr)
     #

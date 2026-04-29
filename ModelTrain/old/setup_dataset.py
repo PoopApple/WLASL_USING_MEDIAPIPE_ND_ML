@@ -15,7 +15,7 @@ def check_mask_validity(dataset_path="./dataset2.0/landmarks_npz/"):
                 foundFalse = False
                 for b in maskarr:
                     if foundFalse and b:
-                        with open("setup_dataset.log", "a") as f:
+                        with open("setup_dataset3.0.log", "a") as f:
                             f.write(f"{file_path} :: found true after false\n")
                         break
                     if not b:
@@ -23,11 +23,16 @@ def check_mask_validity(dataset_path="./dataset2.0/landmarks_npz/"):
 
 
 if __name__ == "__main__":
-    check_mask_validity()
 
     dataset_path = "./dataset2.0/landmarks_npz/"
     combined_dataset_path = "./dataset2.0/dataset2-0.npz"
+    
+    
+    
+    dataset_path = "../ExtractLandmarks/dataset3.0/landmarks_npz"
+    combined_dataset_path = "./dataset3.0/dataset3-0.npz"
 
+    check_mask_validity(dataset_path=dataset_path)
     classes = sorted(
         [
             word
@@ -37,7 +42,7 @@ if __name__ == "__main__":
     )
 
     word_to_ind = {word: ind for ind, word in enumerate(classes)}
-    with open("./dataset2.0/word_to_ind.json", "w") as f:
+    with open("./dataset3.0/word_to_ind.json", "w") as f:
         json.dump(word_to_ind, f)
 
     x_data = []

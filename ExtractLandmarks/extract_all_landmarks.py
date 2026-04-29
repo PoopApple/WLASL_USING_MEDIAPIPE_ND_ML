@@ -748,11 +748,11 @@ if __name__ == "__main__":
     toh masking try for start and end 10% kyuki usme haath position pe aare hote
     
     """
-    doshit("./test_actor.webm", showvid=True)
-    process_one("./test_actor.webm", "./test_actor.npy")
+    # doshit("./test_actor.webm", showvid=True)
+    # process_one("./test_actor.webm", "./test_actor.npy")
 
-    exit()
-    vidpath = "./TestingVids/ACCENT_674051280092625-ACCENT.mp4"
+    # exit()
+    # vidpath = "./TestingVids/ACCENT_674051280092625-ACCENT.mp4"
     # vidpath = "./TestingVids/ACCESS_20630301986906696-ACCESS.mp4"
     # vidpath = "./TestingVids/ACCENT_006466386479419883-ACCENT.mp4"
     # doshit(vid_path=vidpath,
@@ -767,7 +767,17 @@ if __name__ == "__main__":
     dataset_folder = "./TestingVids/dataset_testing_248vids/"
     dataset_folder = "/media/aryan/PoopiDrive/projects_linux/microsoft asl citizen/ASL_Citizen/videos/"
     np_output_folder = "./MS_ASL_Result/"
-    process_all(dataset_folder, np_output_folder, num_workers=3, maxlimit=2000)
+    process_all(dataset_folder, np_output_folder, num_workers=5, maxlimit=20000)
+    
+    
+    """
+    1hour approx = 2000vids
+    on 6 workers
+    
+    11hours = 22000vids !!!!!
+    """
+    
+    
     # doshit("./TestingVids/dataset_testing_248vids/1DOLLAR_023931338852502426-1 DOLLAR.mp4")
     # doshit("./TestingVids/dataset_testing_248vids/1DOLLAR_023931338852502426-1 DOLLAR.mp4")
     # doshit("./TestingVids/dataset_testing_248vids/1DOLLAR_023931338852502426-1 DOLLAR.mp4")

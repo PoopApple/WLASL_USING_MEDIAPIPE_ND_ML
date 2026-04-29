@@ -16,6 +16,11 @@ dataset_removed/
 *.pptx
 *.pdf
 
+*.tfrecord
+
+ModelTrain/dataset3.0/
+ModelTrain/dataset1.0/
+ModelTrain/dataset2.0/
 
 gte9_dataset/
 gte9_landmarks/
@@ -66,3 +71,6 @@ dist/
 build/
 *.egg-info/
 
+Results/
+notes/understanding_gru_bigru_conv1d.md
+notes/
