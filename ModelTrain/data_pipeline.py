@@ -184,9 +184,10 @@ class ASLDataPipeline:
 
         def _load_fn(path_bytes, label):
             path_str = path_bytes.decode("utf-8")
-            npz = np.load(path_str)
-            data = npz["data"].astype(np.float32)  # (128, 64, 4)
-            mask = npz["mask"].astype(np.bool_)  # (128,)
+            # Use context manager to ensure file handles are closed promptly
+            with np.load(path_str) as npz:
+                data = npz["data"].astype(np.float32)  # (128, 64, 4)
+                mask = npz["mask"].astype(np.bool_)  # (128,)
             return data, mask, label
 
         data, mask, label = tf.numpy_function(
@@ -224,7 +225,7 @@ class ASLDataPipeline:
         # This is the key trick to keep the GPU fed despite numpy_function.
         ds = ds.interleave(
             lambda path, label: tf.data.Dataset.from_tensors((path, label)).map(
-                self._load_npz, num_parallel_calls=1
+                self._load_npz, num_parallel_calls=tf.data.AUTOTUNE
             ),
             cycle_length=8,
             num_parallel_calls=tf.data.AUTOTUNE,
@@ -232,7 +233,7 @@ class ASLDataPipeline:
         )
 
         ds = ds.batch(self.batch_size, drop_remainder=False)
-        ds = ds.prefetch(4)
+        ds = ds.prefetch(tf.data.AUTOTUNE)
 
         if repeat:
             ds = ds.repeat()
@@ -256,8 +257,10 @@ class ASLDataPipeline:
         data = tf.io.decode_raw(example["data"], tf.float32)
         data = tf.reshape(data, [MAX_FRAMES, NUM_FEATURES, FEATURE_DIM])
 
-        mask = tf.io.decode_raw(example["mask"], tf.bool)
+        # TFRecord stores raw bytes — decode as uint8 then cast to bool.
+        mask = tf.io.decode_raw(example["mask"], tf.uint8)
         mask = tf.reshape(mask, [MAX_FRAMES])
+        # mask = tf.cast(mask, tf.bool)
 
         label = tf.cast(example["label"], tf.int32)
 

@@ -1,15 +1,3 @@
-"""
-Training script for ASL recognition — dataset 3.0.
-
-Config is set directly below. Change MODEL_TYPE to try different architectures.
-
-Available models:
-    "original"   — Your proven BiGRU (80% baseline)
-    "bigru_v2"   — BiGRU + LayerNorm + wider head
-    "conv_bigru" — Conv1D → BiGRU hybrid
-    "tcn"        — Temporal Convolutional Network (dilated convolutions)
-    "conv1d"     — Pure Conv1D (fastest, lightweight)
-"""
 
 import datetime
 import numpy as np
@@ -21,20 +9,6 @@ import os
 from data_pipeline import ASLDataPipeline
 from model import build_model, get_callbacks
 
-
-# ══════════════════════════════════════════════════════════════════════
-# CONFIG — edit these directly
-# ══════════════════════════════════════════════════════════════════════
-
-"""
-Model	Params	How it works	Speed
-original	1.34M	Your proven BiGRU (80% baseline)	Medium
-bigru_v2	1.41M	Same + LayerNorm + wider head	Medium
-conv_bigru	0.41M	Conv1D extracts local motion → GRU reads globally	Medium
-tcn	0.52M	Dilated convolutions cover full 128 frames	Fast
-conv1d	0.31M	Pure convolutions, simplest deep model	Fastest
-
-"""
 
 
 
@@ -364,110 +338,25 @@ def get_report(
 
 
 
-if __name__ == '__main__':
-    MODEL_PATH = "./dataset3.0/allwords/asl_bigru_bigger_v1_aug_allw_02-05-26__03-11_alltimebest.keras"
+if __name__ == "__main__":
+
     DATASET_DIR = "../ExtractLandmarks/dataset3.0/landmarks_npz"
-    NUM_WORDS = None
-    BATCH_SIZE = 128  # 64 for bigru v2  .... 32 for dualpath (reduced from 128 to avoid CudnnRNNV3 memory issues)
+    NUM_WORDS = 500
+    BATCH_SIZE = 64  # 64 for bigru v2  .... 32 for dualpath (reduced from 128 to avoid CudnnRNNV3 memory issues)
     EPOCHS = 1000
     VAL_SPLIT = 0.20
     TEST_SPLIT = 0.00
     SEED = 1234
     LEARNING_RATE = 1e-4  # 1e-4 for bigru_bigger v1  ..... 1e-3 for rest
-    PATIENCE = 15
+    PATIENCE = 25
     USE_TFRECORD = True
     USE_CLASS_WEIGHTS = True
     USE_AUGMENTATION = True
-    # ── Pick your model ──
-    # "original" | "bigru_v2" | "bigru_v3" | "bigru_bigger_v1" | "bigru_bigger_v2" | "conv_bigru" | "tcn" | "conv1d" | "dualpath" | "dualpath_v2"
-    MODEL_TYPE = "bigru_bigger_v1"
-    # MODEL_TYPE = "conv_bigru"
-    # MODEL_TYPE = "dualpath"
-    # MODEL_TYPE = "dualpath_v2"
-
-    get_report(
-        DATASET_DIR,
-        NUM_WORDS,
-        BATCH_SIZE,
-        EPOCHS,
-        VAL_SPLIT,
-        TEST_SPLIT,
-        SEED,
-        LEARNING_RATE,
-        USE_TFRECORD,
-        USE_AUGMENTATION,
-        MODEL_TYPE,
-        MODEL_PATH)
-        # RESUME_MODEL_PATH
- 
-if __name__ == "__main__i":
-
-    # print("READ TODO.txt\n"*30)
-
-    # DATASET_DIR = "../ExtractLandmarks/dataset3.0/landmarks_npz"
-    # NUM_WORDS = None
-    # BATCH_SIZE = 256  # 64 for bigru v2  .... 32 for dualpath
-    # EPOCHS = 1000
-    # VAL_SPLIT = 0.20
-    # TEST_SPLIT = 0.00
-    # SEED = 1234
-    # LEARNING_RATE = 0.0001/4  # 1e-4 for bigru_bigger v1  ..... 1e-3 for rest
-    # PATIENCE = 15
-    # USE_TFRECORD = True
-    # USE_CLASS_WEIGHTS = True
-    # USE_AUGMENTATION = True
     
-    # # ── If you want to resume, paste the full path here ──
-    # # Example: "dataset3.0/2000words/bigru_bigger_v1_aug/asl_bigru_bigger_v1_aug_2000w_26-04-26__23-41_best.keras"
-    # # RESUME_MODEL_PATH = "dataset3.0/allwords/bigru_bigger_v1_aug/asl_bigru_bigger_v1_aug_allw_01-05-26__23-17_best.keras"
-
-    # # ── Pick your model ──
-    # # "original" | "bigru_v2" | "bigru_v3" | "bigru_bigger_v1" | "bigru_bigger_v2" | "conv_bigru" | "tcn" | "conv1d" | "dualpath" | "dualpath_v2"
-    # MODEL_TYPE = "bigru_bigger_v1"
-    # # MODEL_TYPE = "conv_bigru"
-    # # MODEL_TYPE = "dualpath"
-    # # MODEL_TYPE = "dualpath_v2"
-
-    # main(
-    #     DATASET_DIR,
-    #     NUM_WORDS,
-    #     BATCH_SIZE,
-    #     EPOCHS,
-    #     VAL_SPLIT,
-    #     TEST_SPLIT,
-    #     SEED,
-    #     LEARNING_RATE,
-    #     PATIENCE,
-    #     USE_TFRECORD,
-    #     USE_CLASS_WEIGHTS,
-    #     USE_AUGMENTATION,
-    #     MODEL_TYPE,
-    #     RESUME_MODEL_PATH
-    # )
+    # ── [1] bigru_velocity_v1 on 500 words ──
+    MODEL_TYPE = "bigru_velocity_v1"
+    BATCH_SIZE = 64
     
-    
-    
-    # exit()
-    # RESUME_MODEL_PATH = "./dataset3.0/allwords/bigru_bigger_v2_aug/asl_bigru_bigger_v2_aug_allw_02-05-26__04-42_best.keras"
-    DATASET_DIR = "../ExtractLandmarks/dataset3.0/landmarks_npz"
-    NUM_WORDS = None
-    BATCH_SIZE = 128  # 64 for bigru v2  .... 32 for dualpath (reduced from 128 to avoid CudnnRNNV3 memory issues)
-    EPOCHS = 1000
-    VAL_SPLIT = 0.20
-    TEST_SPLIT = 0.00
-    SEED = 1234
-    LEARNING_RATE = 1e-4  # 1e-4 for bigru_bigger v1  ..... 1e-3 for rest
-    PATIENCE = 15
-    USE_TFRECORD = True
-    USE_CLASS_WEIGHTS = True
-    USE_AUGMENTATION = True
-    # ── Pick your model ──
-    # "original" | "bigru_v2" | "bigru_v3" | "bigru_bigger_v1" | "bigru_bigger_v2" | "conv_bigru" | "tcn" | "conv1d" | "dualpath" | "dualpath_v2"
-    MODEL_TYPE = "bigru_bigger_v2"
-    # MODEL_TYPE = "conv_bigru"
-    # MODEL_TYPE = "dualpath"
-    # MODEL_TYPE = "dualpath_v2"
-
     main(
         DATASET_DIR,
         NUM_WORDS,
@@ -484,28 +373,43 @@ if __name__ == "__main__i":
         MODEL_TYPE,
         # RESUME_MODEL_PATH
     )
+    
+    # Free GPU/RAM between runs to prevent OOM crash
+    tf.keras.backend.clear_session()
+    import gc; gc.collect()
 
-    exit()
+    # ── [2] bigru_velocity_biggest_v1 on ALL 2731 words ──
+    NUM_WORDS = None
+    MODEL_TYPE = "bigru_velocity_biggest_v1"
+    BATCH_SIZE = 64
+    
+    main(
+        DATASET_DIR,
+        NUM_WORDS,
+        BATCH_SIZE,
+        EPOCHS,
+        VAL_SPLIT,
+        TEST_SPLIT,
+        SEED,
+        LEARNING_RATE,
+        PATIENCE,
+        USE_TFRECORD,
+        USE_CLASS_WEIGHTS,
+        USE_AUGMENTATION,
+        MODEL_TYPE,
+        # RESUME_MODEL_PATH
+    )
+    
+    # Free GPU/RAM between runs to prevent OOM crash
+    tf.keras.backend.clear_session()
+    import gc; gc.collect()
 
-    # DATASET_DIR = "../ExtractLandmarks/dataset3.0/landmarks_npz"
-    # NUM_WORDS = 1000
-    # BATCH_SIZE = 128  # 64 for bigru v2  .... 32 for dualpath
-    # EPOCHS = 1000
-    # VAL_SPLIT = 0.20
-    # TEST_SPLIT = 0.00
-    # SEED = 1234
-    # LEARNING_RATE = 1e-4  # 1e-4 for bigru_bigger v1  ..... 1e-3 for rest
-    # PATIENCE = 15
-    # USE_TFRECORD = True
-    # USE_CLASS_WEIGHTS = True
-    # USE_AUGMENTATION = True
-    # # ── Pick your model ──
-    # # "original" | "bigru_v2" | "bigru_v3" | "bigru_bigger_v1" | "bigru_bigger_v2" | "conv_bigru" | "tcn" | "conv1d" | "dualpath" | "dualpath_v2"
-    # MODEL_TYPE = "bigru_bigger_v2"
-    # # MODEL_TYPE = "conv_bigru"
-    # # MODEL_TYPE = "dualpath"
-    # # MODEL_TYPE = "dualpath_v2"
-
+    # ── [3] Resume bigru_biggest_angular_flash_v1 on ALL 2731 words ──
+    # NUM_WORDS = None
+    # MODEL_TYPE = "bigru_biggest_angular_flash_v1"
+    # BATCH_SIZE = 64
+    # RESUME_MODEL_PATH = "dataset3.0/allwords/bigru_biggest_angular_flash_v1_aug/asl_bigru_biggest_angular_flash_v1_aug_allw_04-05-26__07-07_best.keras"
+    # 
     # main(
     #     DATASET_DIR,
     #     NUM_WORDS,
@@ -519,6 +423,6 @@ if __name__ == "__main__i":
     #     USE_TFRECORD,
     #     USE_CLASS_WEIGHTS,
     #     USE_AUGMENTATION,
-    #     MODEL_TYPE
+    #     MODEL_TYPE,
+    #     RESUME_MODEL_PATH
     # )
-    # """broooo 85% ke around achieve hogyi h bigru bigger se on 500words"""

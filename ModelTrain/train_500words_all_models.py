@@ -364,11 +364,11 @@ def get_report(
 
 
 
-if __name__ == '__main__':
+if __name__ == '__main______':
     MODEL_PATH = "./dataset3.0/allwords/asl_bigru_bigger_v1_aug_allw_02-05-26__03-11_alltimebest.keras"
     DATASET_DIR = "../ExtractLandmarks/dataset3.0/landmarks_npz"
     NUM_WORDS = None
-    BATCH_SIZE = 128  # 64 for bigru v2  .... 32 for dualpath (reduced from 128 to avoid CudnnRNNV3 memory issues)
+    BATCH_SIZE = 256  # 64 for bigru v2  .... 32 for dualpath (reduced from 128 to avoid CudnnRNNV3 memory issues)
     EPOCHS = 1000
     VAL_SPLIT = 0.20
     TEST_SPLIT = 0.00
@@ -400,58 +400,25 @@ if __name__ == '__main__':
         MODEL_PATH)
         # RESUME_MODEL_PATH
  
-if __name__ == "__main__i":
-
-    # print("READ TODO.txt\n"*30)
-
-    # DATASET_DIR = "../ExtractLandmarks/dataset3.0/landmarks_npz"
-    # NUM_WORDS = None
-    # BATCH_SIZE = 256  # 64 for bigru v2  .... 32 for dualpath
-    # EPOCHS = 1000
-    # VAL_SPLIT = 0.20
-    # TEST_SPLIT = 0.00
-    # SEED = 1234
-    # LEARNING_RATE = 0.0001/4  # 1e-4 for bigru_bigger v1  ..... 1e-3 for rest
-    # PATIENCE = 15
-    # USE_TFRECORD = True
-    # USE_CLASS_WEIGHTS = True
-    # USE_AUGMENTATION = True
+if __name__ == "__main__":
+    """MODEL_REGISTRY = {
+        "original": build_original,
+        "bigru_v2": build_bigru_v2,
+        "bigru_v3": build_bigru_v3,
+        "bigru_bigger_v1": build_bigru_bigger_v1, -- done already
+        "bigru_bigger_v2": build_bigru_bigger_v2, -- done
+        "conv_bigru": build_conv_bigru,
+        "conv_only_v2": build_conv_only_v2,
+        "conv_bigru_v3": build_conv_bigru_v3,
+        "tcn": build_tcn,
+        "conv1d": build_conv1d,
+        "dualpath": build_dualpath,
+        "dualpath_v2": build_dualpath_v2,
+    }"""
     
-    # # ── If you want to resume, paste the full path here ──
-    # # Example: "dataset3.0/2000words/bigru_bigger_v1_aug/asl_bigru_bigger_v1_aug_2000w_26-04-26__23-41_best.keras"
-    # # RESUME_MODEL_PATH = "dataset3.0/allwords/bigru_bigger_v1_aug/asl_bigru_bigger_v1_aug_allw_01-05-26__23-17_best.keras"
-
-    # # ── Pick your model ──
-    # # "original" | "bigru_v2" | "bigru_v3" | "bigru_bigger_v1" | "bigru_bigger_v2" | "conv_bigru" | "tcn" | "conv1d" | "dualpath" | "dualpath_v2"
-    # MODEL_TYPE = "bigru_bigger_v1"
-    # # MODEL_TYPE = "conv_bigru"
-    # # MODEL_TYPE = "dualpath"
-    # # MODEL_TYPE = "dualpath_v2"
-
-    # main(
-    #     DATASET_DIR,
-    #     NUM_WORDS,
-    #     BATCH_SIZE,
-    #     EPOCHS,
-    #     VAL_SPLIT,
-    #     TEST_SPLIT,
-    #     SEED,
-    #     LEARNING_RATE,
-    #     PATIENCE,
-    #     USE_TFRECORD,
-    #     USE_CLASS_WEIGHTS,
-    #     USE_AUGMENTATION,
-    #     MODEL_TYPE,
-    #     RESUME_MODEL_PATH
-    # )
-    
-    
-    
-    # exit()
-    # RESUME_MODEL_PATH = "./dataset3.0/allwords/bigru_bigger_v2_aug/asl_bigru_bigger_v2_aug_allw_02-05-26__04-42_best.keras"
     DATASET_DIR = "../ExtractLandmarks/dataset3.0/landmarks_npz"
     NUM_WORDS = None
-    BATCH_SIZE = 128  # 64 for bigru v2  .... 32 for dualpath (reduced from 128 to avoid CudnnRNNV3 memory issues)
+    BATCH_SIZE = 64  # 64 for bigru v2  .... 32 for dualpath (reduced from 128 to avoid CudnnRNNV3 memory issues)
     EPOCHS = 1000
     VAL_SPLIT = 0.20
     TEST_SPLIT = 0.00
@@ -461,12 +428,9 @@ if __name__ == "__main__i":
     USE_TFRECORD = True
     USE_CLASS_WEIGHTS = True
     USE_AUGMENTATION = True
-    # ── Pick your model ──
-    # "original" | "bigru_v2" | "bigru_v3" | "bigru_bigger_v1" | "bigru_bigger_v2" | "conv_bigru" | "tcn" | "conv1d" | "dualpath" | "dualpath_v2"
-    MODEL_TYPE = "bigru_bigger_v2"
-    # MODEL_TYPE = "conv_bigru"
-    # MODEL_TYPE = "dualpath"
-    # MODEL_TYPE = "dualpath_v2"
+    
+    #     BATCH_SIZE=128
+    MODEL_TYPE = "bigru_angular_v1"
 
     main(
         DATASET_DIR,
@@ -484,7 +448,127 @@ if __name__ == "__main__i":
         MODEL_TYPE,
         # RESUME_MODEL_PATH
     )
-
+    
+    
+    BATCH_SIZE = 64
+    MODEL_TYPE = "bigru_bigger_angular_v1"
+    
+    main(
+        DATASET_DIR,
+        NUM_WORDS,
+        BATCH_SIZE,
+        EPOCHS,
+        VAL_SPLIT,
+        TEST_SPLIT,
+        SEED,
+        LEARNING_RATE,
+        PATIENCE,
+        USE_TFRECORD,
+        USE_CLASS_WEIGHTS,
+        USE_AUGMENTATION,
+        MODEL_TYPE,
+        # RESUME_MODEL_PATH
+    )
+    
+    exit()
+    
+    MODEL_TYPE = "bigru_flash"
+    
+    main(
+        DATASET_DIR,
+        NUM_WORDS,
+        BATCH_SIZE,
+        EPOCHS,
+        VAL_SPLIT,
+        TEST_SPLIT,
+        SEED,
+        LEARNING_RATE,
+        PATIENCE,
+        USE_TFRECORD,
+        USE_CLASS_WEIGHTS,
+        USE_AUGMENTATION,
+        MODEL_TYPE,
+        # RESUME_MODEL_PATH
+    )
+    
+    MODEL_TYPE = "conv_bigru"
+    
+    main(
+        DATASET_DIR,
+        NUM_WORDS,
+        BATCH_SIZE,
+        EPOCHS,
+        VAL_SPLIT,
+        TEST_SPLIT,
+        SEED,
+        LEARNING_RATE,
+        PATIENCE,
+        USE_TFRECORD,
+        USE_CLASS_WEIGHTS,
+        USE_AUGMENTATION,
+        MODEL_TYPE,
+        # RESUME_MODEL_PATH
+    )
+    
+    MODEL_TYPE = "conv_only_v2"
+    
+    main(
+        DATASET_DIR,
+        NUM_WORDS,
+        BATCH_SIZE,
+        EPOCHS,
+        VAL_SPLIT,
+        TEST_SPLIT,
+        SEED,
+        LEARNING_RATE,
+        PATIENCE,
+        USE_TFRECORD,
+        USE_CLASS_WEIGHTS,
+        USE_AUGMENTATION,
+        MODEL_TYPE,
+        # RESUME_MODEL_PATH
+    )
+    
+    
+    
+    MODEL_TYPE = "conv_bigru_v3"
+    
+    main(
+        DATASET_DIR,
+        NUM_WORDS,
+        BATCH_SIZE,
+        EPOCHS,
+        VAL_SPLIT,
+        TEST_SPLIT,
+        SEED,
+        LEARNING_RATE,
+        PATIENCE,
+        USE_TFRECORD,
+        USE_CLASS_WEIGHTS,
+        USE_AUGMENTATION,
+        MODEL_TYPE,
+        # RESUME_MODEL_PATH
+    )
+    
+    
+    MODEL_TYPE = "tcn"
+    
+    main(
+        DATASET_DIR,
+        NUM_WORDS,
+        BATCH_SIZE,
+        EPOCHS,
+        VAL_SPLIT,
+        TEST_SPLIT,
+        SEED,
+        LEARNING_RATE,
+        PATIENCE,
+        USE_TFRECORD,
+        USE_CLASS_WEIGHTS,
+        USE_AUGMENTATION,
+        MODEL_TYPE,
+        # RESUME_MODEL_PATH
+    )
     exit()
 
     # DATASET_DIR = "../ExtractLandmarks/dataset3.0/landmarks_npz"

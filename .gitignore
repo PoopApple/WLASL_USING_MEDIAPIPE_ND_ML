@@ -74,3 +74,4 @@ build/
 Results/
 notes/understanding_gru_bigru_conv1d.md
 notes/
+*.task

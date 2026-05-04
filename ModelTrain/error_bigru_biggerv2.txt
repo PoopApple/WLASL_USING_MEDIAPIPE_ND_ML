@@ -1,0 +1,74 @@
+GPUs available: [PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU')]
+Saved label mapping to ./dataset3.0/allwords/word_to_ind_all.json
+Selected 2731 words, 166798 total samples
+Split sizes — train: 133438, val: 33360, test: 0
+
+──────────────────────────────────────────────────
+  Data loading:
+    Source:        TFRecord shards
+    Train samples: 133438
+    Val samples:   33360
+    Test samples:  0
+    Augmentation:  ON (train only)
+      Noise σ:       0.015
+      Scale range:   0.9–1.1
+      Frame drop:    5%
+      Landmark drop: 5%
+──────────────────────────────────────────────────
+
+
+============================================================
+Training config:
+  Words:         2731
+  Batch size:    64
+  Epochs:        1000
+  LR:            5e-05
+  Model:         bigru_bigger_v2
+  Augmentation:  True
+  Train steps:   2085
+  Val steps:     522
+============================================================
+
+Model: "bigru_bigger_v2"
+┏━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┓
+┃ Layer (type)        ┃ Output Shape      ┃    Param # ┃ Connected to      ┃
+┡━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━┩
+│ input_data          │ (None, 128, 64,   │          0 │ -                 │
+│ (InputLayer)        │ 4)                │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ reshape (Reshape)   │ (None, 128, 256)  │          0 │ input_data[0][0]  │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ spatial_dropout1d   │ (None, 128, 256)  │          0 │ reshape[0][0]     │
+│ (SpatialDropout1D)  │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ input_mask          │ (None, 128)       │          0 │ -                 │
+│ (InputLayer)        │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ bidirectional       │ (None, 128, 2048) │  7,876,608 │ spatial_dropout1… │
+│ (Bidirectional)     │                   │            │ input_mask[0][0]  │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ layer_normalization │ (None, 128, 2048) │      4,096 │ bidirectional[0]… │
+│ (LayerNormalizatio… │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ dropout (Dropout)   │ (None, 128, 2048) │          0 │ layer_normalizat… │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ bidirectional_1     │ (None, 1024)      │  7,870,464 │ dropout[0][0],    │
+│ (Bidirectional)     │                   │            │ input_mask[0][0]  │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ layer_normalizatio… │ (None, 1024)      │      2,048 │ bidirectional_1[… │
+│ (LayerNormalizatio… │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ dropout_1 (Dropout) │ (None, 1024)      │          0 │ layer_normalizat… │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ dense (Dense)       │ (None, 1024)      │  1,049,600 │ dropout_1[0][0]   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ dropout_2 (Dropout) │ (None, 1024)      │          0 │ dense[0][0]       │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ dense_1 (Dense)     │ (None, 512)       │    524,800 │ dropout_2[0][0]   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ dense_2 (Dense)     │ (None, 2731)      │  1,401,003 │ dense_1[0][0]     │
+└─────────────────────┴───────────────────┴────────────┴───────────────────┘
+ Total params: 18,728,619 (71.44 MB)
+ Trainable params: 18,728,619 (71.44 MB)
+ Non-trainable params: 0 (0.00 B)
+Epoch 1/1000

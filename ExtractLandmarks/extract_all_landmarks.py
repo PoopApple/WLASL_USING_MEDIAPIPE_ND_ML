@@ -741,7 +741,45 @@ def measure_time(func, *args, **kwargs):
     return result
 
 
+def check200vids(input_folder="/run/media/aryan/PoopiDrive/projects_linux/microsoft asl citizen/ASL_Citizen/videos/"):
+    
+    print(datetime.datetime.now().strftime("%H:%M:%S"))
+    
+    for filename in os.listdir(input_folder)[:200]:
+        
+        if filename.lower().endswith(".mp4"):
+            input_path = os.path.join(input_folder, filename)
+            doshit(vid_path=input_path)
+    
+    print(datetime.datetime.now().strftime("%H:%M:%S"))
+    
+
+
 if __name__ == "__main__":
+    
+    # start = 03:19:03
+    # end = 03:36:48
+    # Time taken: 1065220.291 ms
+    
+    # measure_time(check200vids)
+    
+    timeofwords200 = 1065220 
+    timeofword1 = timeofwords200/200
+    
+    numofvids = 83399 
+    
+    timeoftotal = numofvids*timeofword1
+    
+    insec = timeoftotal/1000
+    inmin = insec/60
+    inhour = inmin/60
+    indays = inhour/24
+    
+    print(f"inmin {inmin}")
+    print(f"inhours {inhour}")
+    print(f"indays {indays}")
+     
+    exit()
     """
     agar model abhi bhi galat ho
     

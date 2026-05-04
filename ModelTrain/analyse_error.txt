@@ -1,0 +1,70 @@
+Traceback (most recent call last):
+  File "/home/aryan/projects_linux/WLASL_USING_MEDIAPIPE_ND_ML/ModelTrain/.venv/lib/python3.12/site-packages/keras/src/saving/serialization_lib.py", line 733, in deserialize_keras_object
+    instance = cls.from_config(inner_config)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/aryan/projects_linux/WLASL_USING_MEDIAPIPE_ND_ML/ModelTrain/.venv/lib/python3.12/site-packages/keras/src/layers/core/lambda_layer.py", line 200, in from_config
+    config["function"] = serialization_lib.deserialize_keras_object(
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/aryan/projects_linux/WLASL_USING_MEDIAPIPE_ND_ML/ModelTrain/.venv/lib/python3.12/site-packages/keras/src/saving/serialization_lib.py", line 693, in deserialize_keras_object
+    return _retrieve_class_or_fn(
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/aryan/projects_linux/WLASL_USING_MEDIAPIPE_ND_ML/ModelTrain/.venv/lib/python3.12/site-packages/keras/src/saving/serialization_lib.py", line 834, in _retrieve_class_or_fn
+    raise TypeError(
+TypeError: Could not locate function 'calc_velocity'. Make sure custom classes and functions are decorated with `@keras.saving.register_keras_serializable()`. If they are already decorated, make sure they are all imported so that the decorator is run before trying to load them. Full object config: {'module': 'builtins', 'class_name': 'function', 'config': 'calc_velocity', 'registered_name': 'function'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/aryan/projects_linux/WLASL_USING_MEDIAPIPE_ND_ML/ModelTrain/.venv/lib/python3.12/site-packages/keras/src/saving/serialization_lib.py", line 733, in deserialize_keras_object
+    instance = cls.from_config(inner_config)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/aryan/projects_linux/WLASL_USING_MEDIAPIPE_ND_ML/ModelTrain/.venv/lib/python3.12/site-packages/keras/src/models/model.py", line 823, in from_config
+    return functional_from_config(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/aryan/projects_linux/WLASL_USING_MEDIAPIPE_ND_ML/ModelTrain/.venv/lib/python3.12/site-packages/keras/src/models/functional.py", line 561, in functional_from_config
+    process_layer(layer_data)
+  File "/home/aryan/projects_linux/WLASL_USING_MEDIAPIPE_ND_ML/ModelTrain/.venv/lib/python3.12/site-packages/keras/src/models/functional.py", line 528, in process_layer
+    layer = serialization_lib.deserialize_keras_object(
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/aryan/projects_linux/WLASL_USING_MEDIAPIPE_ND_ML/ModelTrain/.venv/lib/python3.12/site-packages/keras/src/saving/serialization_lib.py", line 735, in deserialize_keras_object
+    raise TypeError(
+TypeError: <class 'keras.src.layers.core.lambda_layer.Lambda'> could not be deserialized properly. Please ensure that components that are Python object instances (layers, models, etc.) returned by `get_config()` are explicitly deserialized in the model's `from_config()` method.
+
+config={'module': 'keras.layers', 'class_name': 'Lambda', 'config': {'name': 'lambda', 'trainable': True, 'dtype': {'module': 'keras', 'class_name': 'DTypePolicy', 'config': {'name': 'float32'}, 'registered_name': None}, 'function': {'module': 'builtins', 'class_name': 'function', 'config': 'calc_velocity', 'registered_name': 'function'}, 'arguments': {}}, 'registered_name': None, 'build_config': {'input_shape': [None, 128, 64, 4]}, 'name': 'lambda', 'inbound_nodes': [{'args': [{'class_name': '__keras_tensor__', 'config': {'shape': [None, 128, 64, 4], 'dtype': 'float32', 'keras_history': ['input_data', 0, 0]}}], 'kwargs': {'mask': None}}]}.
+
+Exception encountered: Could not locate function 'calc_velocity'. Make sure custom classes and functions are decorated with `@keras.saving.register_keras_serializable()`. If they are already decorated, make sure they are all imported so that the decorator is run before trying to load them. Full object config: {'module': 'builtins', 'class_name': 'function', 'config': 'calc_velocity', 'registered_name': 'function'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/aryan/projects_linux/WLASL_USING_MEDIAPIPE_ND_ML/ModelTrain/analyze_500words_results.py", line 430, in <module>
+    main()
+  File "/home/aryan/projects_linux/WLASL_USING_MEDIAPIPE_ND_ML/ModelTrain/analyze_500words_results.py", line 303, in main
+    topk = evaluate_topk(model_path, test_ds, LEARNING_RATE)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/aryan/projects_linux/WLASL_USING_MEDIAPIPE_ND_ML/ModelTrain/analyze_500words_results.py", line 206, in evaluate_topk
+    model = tf.keras.models.load_model(
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/aryan/projects_linux/WLASL_USING_MEDIAPIPE_ND_ML/ModelTrain/.venv/lib/python3.12/site-packages/keras/src/saving/saving_api.py", line 189, in load_model
+    return saving_lib.load_model(
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/aryan/projects_linux/WLASL_USING_MEDIAPIPE_ND_ML/ModelTrain/.venv/lib/python3.12/site-packages/keras/src/saving/saving_lib.py", line 365, in load_model
+    return _load_model_from_fileobj(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/aryan/projects_linux/WLASL_USING_MEDIAPIPE_ND_ML/ModelTrain/.venv/lib/python3.12/site-packages/keras/src/saving/saving_lib.py", line 442, in _load_model_from_fileobj
+    model = _model_from_config(
+            ^^^^^^^^^^^^^^^^^^^
+  File "/home/aryan/projects_linux/WLASL_USING_MEDIAPIPE_ND_ML/ModelTrain/.venv/lib/python3.12/site-packages/keras/src/saving/saving_lib.py", line 431, in _model_from_config
+    model = deserialize_keras_object(
+            ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/aryan/projects_linux/WLASL_USING_MEDIAPIPE_ND_ML/ModelTrain/.venv/lib/python3.12/site-packages/keras/src/saving/serialization_lib.py", line 735, in deserialize_keras_object
+    raise TypeError(
+TypeError: <class 'keras.src.models.functional.Functional'> could not be deserialized properly. Please ensure that components that are Python object instances (layers, models, etc.) returned by `get_config()` are explicitly deserialized in the model's `from_config()` method.
+
+config={'module': 'keras.src.models.functional', 'class_name': 'Functional', 'config': {}, 'registered_name': 'Functional', 'build_config': {'input_shape': None}, 'compile_config': {'optimizer': {'module': 'keras.optimizers', 'class_name': 'Adam', 'config': {'name': 'adam', 'learning_rate': 0.0002500000118743628, 'weight_decay': None, 'clipnorm': 5.0, 'global_clipnorm': None, 'clipvalue': None, 'use_ema': False, 'ema_momentum': 0.99, 'ema_overwrite_frequency': None, 'loss_scale_factor': None, 'gradient_accumulation_steps': None, 'beta_1': 0.9, 'beta_2': 0.999, 'epsilon': 1e-07, 'amsgrad': False}, 'registered_name': None}, 'loss': 'sparse_categorical_crossentropy', 'loss_weights': None, 'metrics': ['accuracy', {'module': 'keras.metrics', 'class_name': 'SparseTopKCategoricalAccuracy', 'config': {'name': 'top5_acc', 'dtype': 'float32', 'k': 5}, 'registered_name': None}], 'weighted_metrics': None, 'run_eagerly': False, 'steps_per_execution': 1, 'jit_compile': False}}.
+
+Exception encountered: <class 'keras.src.layers.core.lambda_layer.Lambda'> could not be deserialized properly. Please ensure that components that are Python object instances (layers, models, etc.) returned by `get_config()` are explicitly deserialized in the model's `from_config()` method.
+
+config={'module': 'keras.layers', 'class_name': 'Lambda', 'config': {'name': 'lambda', 'trainable': True, 'dtype': {'module': 'keras', 'class_name': 'DTypePolicy', 'config': {'name': 'float32'}, 'registered_name': None}, 'function': {'module': 'builtins', 'class_name': 'function', 'config': 'calc_velocity', 'registered_name': 'function'}, 'arguments': {}}, 'registered_name': None, 'build_config': {'input_shape': [None, 128, 64, 4]}, 'name': 'lambda', 'inbound_nodes': [{'args': [{'class_name': '__keras_tensor__', 'config': {'shape': [None, 128, 64, 4], 'dtype': 'float32', 'keras_history': ['input_data', 0, 0]}}], 'kwargs': {'mask': None}}]}.
+
+Exception encountered: Could not locate function 'calc_velocity'. Make sure custom classes and functions are decorated with `@keras.saving.register_keras_serializable()`. If they are already decorated, make sure they are all imported so that the decorator is run before trying to load them. Full object config: {'module': 'builtins', 'class_name': 'function', 'config': 'calc_velocity', 'registered_name': 'function'}

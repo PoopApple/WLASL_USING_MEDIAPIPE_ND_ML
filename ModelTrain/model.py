@@ -85,6 +85,14 @@ def build_bigru_v2(num_classes: int) -> tf.keras.Model:
     )
 
 
+@tf.keras.utils.register_keras_serializable(package="asl")
+def calc_velocity(x):
+    diff = x[:, 1:, :, :] - x[:, :-1, :, :]
+    zeros = tf.zeros_like(x[:, 0:1, :, :])
+    return tf.concat([zeros, diff], axis=1)
+
+
+
 def build_bigru_v3(num_classes: int) -> tf.keras.Model:
     """
     Upgraded BiGRU to push past 80% accuracy.
@@ -99,10 +107,6 @@ def build_bigru_v3(num_classes: int) -> tf.keras.Model:
     input_mask = tf.keras.Input(shape=(MAX_FRAMES,), dtype=tf.bool, name="input_mask")
 
     # Calculate Velocity (frame[t] - frame[t-1])
-    def calc_velocity(x):
-        diff = x[:, 1:, :, :] - x[:, :-1, :, :]
-        zeros = tf.zeros_like(x[:, 0:1, :, :])
-        return tf.concat([zeros, diff], axis=1)
         
     velocity = tf.keras.layers.Lambda(calc_velocity)(input_data)
     
@@ -131,6 +135,202 @@ def build_bigru_v3(num_classes: int) -> tf.keras.Model:
 
     return tf.keras.Model(
         inputs=[input_data, input_mask], outputs=outputs, name="bigru_v3"
+    )
+
+@tf.keras.utils.register_keras_serializable(package="asl")
+def compute_kinematic_features(x):
+    # x: (batch, 128, 64, 4)
+
+    # ---- remove visibility & padding (keep only the 63 used landmarks) ----
+    x = x[:, :, :63, :3]   # (batch, 128, 63, 3)
+
+    # ---- split ----
+    body = x[:, :, :21, :]
+    left = x[:, :, 21:42, :]
+    right = x[:, :, 42:63, :]
+
+
+    def angle(a, b, c):
+        ba = a - b
+        bc = c - b
+
+        # Use a larger epsilon to prevent exploding gradients when vectors are near zero
+        # Gradient of l2_normalize(x) is unstable for small x
+        ba = ba / tf.maximum(tf.norm(ba, axis=-1, keepdims=True), 1e-4)
+        bc = bc / tf.maximum(tf.norm(bc, axis=-1, keepdims=True), 1e-4)
+
+        cos = tf.reduce_sum(ba * bc, axis=-1)
+        # Tighter clipping to avoid infinite gradients in acos derivative
+        # d/dx acos(x) = -1 / sqrt(1 - x^2)
+        # If x=0.999, d/dx is ~22. If x=0.99999, d/dx is ~223.
+        cos = tf.clip_by_value(cos, -0.999, 0.999) 
+
+        return tf.acos(cos)
+
+    def bone(p1, p2):
+        v = p2 - p1
+        # Safer normalization for bone directions
+        return v / tf.maximum(tf.norm(v, axis=-1, keepdims=True), 1e-4)
+
+    # =========================
+    # BODY
+    # =========================
+
+    L_SHOULDER = 7
+    R_SHOULDER = 8
+    L_ELBOW = 9
+    R_ELBOW = 10
+    L_WRIST = 11
+    R_WRIST = 12
+    L_HIP = 19
+    R_HIP = 20
+
+    left_elbow = angle(body[:, :, L_SHOULDER], body[:, :, L_ELBOW], body[:, :, L_WRIST])
+    right_elbow = angle(body[:, :, R_SHOULDER], body[:, :, R_ELBOW], body[:, :, R_WRIST])
+
+    left_shoulder = angle(body[:, :, L_HIP], body[:, :, L_SHOULDER], body[:, :, L_ELBOW])
+    right_shoulder = angle(body[:, :, R_HIP], body[:, :, R_SHOULDER], body[:, :, R_ELBOW])
+
+    # =========================
+    # HANDS
+    # =========================
+
+    def hand_angles(hand):
+        fingers = [
+            (1,2,3,4),
+            (5,6,7,8),
+            (9,10,11,12),
+            (13,14,15,16),
+            (17,18,19,20)
+        ]
+
+        out = []
+
+        wrist = hand[:, :, 0]
+
+        for mcp, pip, dip, tip in fingers:
+            # internal bends
+            out.append(angle(hand[:, :, mcp], hand[:, :, pip], hand[:, :, dip]))
+            out.append(angle(hand[:, :, pip], hand[:, :, dip], hand[:, :, tip]))
+
+            # global orientation
+            out.append(angle(wrist, hand[:, :, mcp], hand[:, :, tip]))
+
+        return tf.stack(out, axis=-1)
+    
+    left_hand_angles = hand_angles(left)
+    right_hand_angles = hand_angles(right)
+
+    # =========================
+    # BONE DIRECTIONS
+    # =========================
+
+    left_upper_arm = bone(body[:, :, L_SHOULDER], body[:, :, L_ELBOW])
+    left_forearm = bone(body[:, :, L_ELBOW], body[:, :, L_WRIST])
+
+    right_upper_arm = bone(body[:, :, R_SHOULDER], body[:, :, R_ELBOW])
+    right_forearm = bone(body[:, :, R_ELBOW], body[:, :, R_WRIST])
+
+    # =========================
+    # CONCAT
+    # =========================
+
+    features = tf.concat([
+        tf.stack([left_elbow, right_elbow, left_shoulder, right_shoulder], axis=-1),
+        left_hand_angles,
+        right_hand_angles,
+        left_upper_arm,     # 3 components (x, y, z)
+        left_forearm,       # 3 components 
+        right_upper_arm,    # 3 components
+        right_forearm       # 3 components
+    ], axis=-1)
+
+    return features
+
+# ══════════════════════════════════════════════════════════════════════
+# bigru_angular (PURE ANGLES ONLY)
+# ══════════════════════════════════════════════════════════════════════
+
+def build_bigru_angular(num_classes: int) -> tf.keras.Model:
+    """
+    Theoretical test model that completely discards raw coordinates and 
+    relies 100% on the mathematically computed 46 kinematic angles.
+    """
+    input_data = tf.keras.Input(shape=(MAX_FRAMES, 64, 4), name="input_data")
+    input_mask = tf.keras.Input(shape=(MAX_FRAMES,), dtype=tf.bool, name="input_mask")
+    
+    # 1. Extract exactly 46 angles and combine with raw coordinates
+    angles = KinematicFeatureLayer()(input_data)
+    x_raw = tf.keras.layers.Reshape((MAX_FRAMES, 64 * 4))(input_data)
+    
+    x = tf.keras.layers.Concatenate(axis=-1)([x_raw, angles])
+    
+    # 2. BiGRU Funnel Stack
+    x = tf.keras.layers.Bidirectional(
+        tf.keras.layers.GRU(512, return_sequences=True)
+    )(x, mask=input_mask)
+    x = tf.keras.layers.LayerNormalization()(x)
+    x = tf.keras.layers.Dropout(0.4)(x)
+    
+    x = tf.keras.layers.Bidirectional(
+        tf.keras.layers.GRU(256)
+    )(x, mask=input_mask)
+    x = tf.keras.layers.LayerNormalization()(x)
+    x = tf.keras.layers.Dropout(0.4)(x)
+    
+    # 4. Dense Classification Head
+    x = tf.keras.layers.Dense(512, activation="relu")(x)
+    x = tf.keras.layers.Dropout(0.4)(x)
+    x = tf.keras.layers.Dense(256, activation="relu")(x)
+    
+    outputs = tf.keras.layers.Dense(num_classes, activation="softmax")(x)
+
+    return tf.keras.Model(
+        inputs=[input_data, input_mask], outputs=outputs, name="bigru_angular"
+    )
+
+
+def compute_kinematic_features_global(x):
+    return compute_kinematic_features(x)
+
+def build_bigru_angular_v1(num_classes: int) -> tf.keras.Model:
+    """
+    BiGRU with angle/distance constraints, scaled down for 500 words.
+    Uses 256 and 128 GRU units (similar to bigru_v2 capacity).
+    """
+    input_data = tf.keras.Input(shape=(MAX_FRAMES, 64, 4), name="input_data")
+    input_mask = tf.keras.Input(shape=(MAX_FRAMES,), dtype=tf.bool, name="input_mask")
+    
+    spatial_features = tf.keras.layers.Lambda(
+        compute_kinematic_features,
+        output_shape=(MAX_FRAMES, 46)
+    )(input_data)
+    
+    # Base flattened raw coords
+    x_raw = tf.keras.layers.Reshape((MAX_FRAMES, 64 * 4))(input_data)
+
+    # Flattened combined with newly computed angles and distances
+    x = tf.keras.layers.Concatenate(axis=-1)([x_raw, spatial_features])
+
+    x = tf.keras.layers.Bidirectional(
+        tf.keras.layers.GRU(256, return_sequences=True)
+    )(x, mask=input_mask)
+    x = tf.keras.layers.LayerNormalization()(x)
+    x = tf.keras.layers.Dropout(0.4)(x) 
+
+    x = tf.keras.layers.Bidirectional(
+        tf.keras.layers.GRU(128)
+    )(x, mask=input_mask)
+    x = tf.keras.layers.LayerNormalization()(x)
+
+    x = tf.keras.layers.Dropout(0.4)(x)
+    x = tf.keras.layers.Dense(256, activation="relu")(x)
+    x = tf.keras.layers.Dropout(0.3)(x)
+    x = tf.keras.layers.Dense(128, activation="relu")(x)
+    outputs = tf.keras.layers.Dense(num_classes, activation="softmax")(x)
+
+    return tf.keras.Model(
+        inputs=[input_data, input_mask], outputs=outputs, name="bigru_angular_v1"
     )
 
 def build_bigru_bigger_v1(num_classes: int) -> tf.keras.Model:
@@ -165,6 +365,422 @@ def build_bigru_bigger_v1(num_classes: int) -> tf.keras.Model:
         inputs=[input_data, input_mask], outputs=outputs, name="bigru_bigger_v1"
     )
 
+def build_bigru_bigger_angular_v1(num_classes: int) -> tf.keras.Model:
+    """
+    Scaled-up version of bigru_v2 for 1000+ words.
+    Uses 512 and 256 GRU units instead of 256 and 128.
+    Heavy dropout added to prevent overfitting on the long tail of rare words.
+    Adds spatial tracking features: Angle constraints combining left & right sides.
+    """
+    input_data = tf.keras.Input(shape=(MAX_FRAMES, 64, 4), name="input_data")
+    input_mask = tf.keras.Input(shape=(MAX_FRAMES,), dtype=tf.bool, name="input_mask")
+    
+    spatial_features = tf.keras.layers.Lambda(
+        compute_kinematic_features,
+        output_shape=(MAX_FRAMES, 46)
+    )(input_data)
+    
+    # Base flattened raw coords
+    x_raw = tf.keras.layers.Reshape((MAX_FRAMES, 64 * 4))(input_data)
+
+    # Flattened combined with newly computed angles and distances
+    x = tf.keras.layers.Concatenate(axis=-1)([x_raw, spatial_features])
+
+    x = tf.keras.layers.Bidirectional(
+        tf.keras.layers.GRU(512, return_sequences=True)
+    )(x, mask=input_mask)
+    x = tf.keras.layers.LayerNormalization()(x)
+    x = tf.keras.layers.Dropout(0.4)(x)  # Extra dropout for capacity control
+
+    x = tf.keras.layers.Bidirectional(
+        tf.keras.layers.GRU(256)
+    )(x, mask=input_mask)
+    x = tf.keras.layers.LayerNormalization()(x)
+
+    x = tf.keras.layers.Dropout(0.5)(x)
+    x = tf.keras.layers.Dense(512, activation="relu")(x)
+    x = tf.keras.layers.Dropout(0.4)(x)
+    x = tf.keras.layers.Dense(256, activation="relu")(x)
+    outputs = tf.keras.layers.Dense(num_classes, activation="softmax")(x)
+
+    return tf.keras.Model(
+        inputs=[input_data, input_mask], outputs=outputs, name="bigru_bigger_angular_v1"
+    )
+
+
+# ══════════════════════════════════════════════════════════════════════
+# FIXED KINEMATIC LAYER — proper Keras Layer instead of Lambda
+# Fixes: acos clip tightened to ±0.99, proper serialization, no Lambda trace issues
+# ══════════════════════════════════════════════════════════════════════
+
+@tf.keras.utils.register_keras_serializable(package="asl")
+class KinematicFeatureLayer(tf.keras.layers.Layer):
+    """
+    Computes kinematic features (joint angles + bone directions) as a proper
+    Keras Layer instead of Lambda, fixing gradient tracing and serialization.
+
+    Output shape: (batch, T, 46)
+      - 4 elbow/shoulder angles
+      - 15 left hand angles
+      - 15 right hand angles
+      - 4×3 = 12 bone direction components (left/right upper arm + forearm)
+    """
+    def call(self, x):
+        x = x[:, :, :63, :3]                  # (batch, T, 63, 3)
+        body  = x[:, :, :21, :]
+        left  = x[:, :, 21:42, :]
+        right = x[:, :, 42:63, :]
+
+        def _safe_norm(v):
+            norm_sq = tf.reduce_sum(v * v, axis=-1, keepdims=True)
+            # Use tf.maximum to strictly enforce a lower bound without distorting real values!
+            # If norm_sq < 1e-7 (like padded zero-vectors), the gradient stops here (becomes 0).
+            # This prevents both NaN gradients and global clipnorm explosion, while
+            # keeping real vectors mathematically perfect unit vectors.
+            safe_norm_sq = tf.maximum(norm_sq, 1e-7)
+            return v / tf.sqrt(safe_norm_sq)
+
+        def _angle(a, b, c):
+            ba = _safe_norm(a - b)
+            bc = _safe_norm(c - b)
+            cos = tf.reduce_sum(ba * bc, axis=-1)
+            cos = tf.clip_by_value(cos, -0.99, 0.99)
+            return tf.acos(cos)
+
+        def _bone(p1, p2):
+            return _safe_norm(p2 - p1)
+
+        # Body angles
+        L_SH, R_SH, L_EL, R_EL, L_WR, R_WR, L_HIP, R_HIP = 7, 8, 9, 10, 11, 12, 19, 20
+        body_angles = tf.stack([
+            _angle(body[:,:,L_HIP],  body[:,:,L_SH], body[:,:,L_EL]),
+            _angle(body[:,:,R_HIP],  body[:,:,R_SH], body[:,:,R_EL]),
+            _angle(body[:,:,L_SH],   body[:,:,L_EL], body[:,:,L_WR]),
+            _angle(body[:,:,R_SH],   body[:,:,R_EL], body[:,:,R_WR]),
+        ], axis=-1)   # (batch, T, 4)
+
+        # Hand angles (15 per hand: 2 bends + 1 global per finger)
+        def _hand_angles(hand):
+            fingers = [(1,2,3,4),(5,6,7,8),(9,10,11,12),(13,14,15,16),(17,18,19,20)]
+            wrist = hand[:, :, 0]
+            out = []
+            for mcp, pip, dip, tip in fingers:
+                out.append(_angle(hand[:,:,mcp], hand[:,:,pip], hand[:,:,dip]))
+                out.append(_angle(hand[:,:,pip], hand[:,:,dip], hand[:,:,tip]))
+                out.append(_angle(wrist,         hand[:,:,mcp], hand[:,:,tip]))
+            return tf.stack(out, axis=-1)   # (batch, T, 15)
+
+        # Bone directions (3 components each → 12 total)
+        bones = tf.concat([
+            _bone(body[:,:,L_SH], body[:,:,L_EL]),
+            _bone(body[:,:,L_EL], body[:,:,L_WR]),
+            _bone(body[:,:,R_SH], body[:,:,R_EL]),
+            _bone(body[:,:,R_EL], body[:,:,R_WR]),
+        ], axis=-1)   # (batch, T, 12)
+
+        return tf.concat([body_angles, _hand_angles(left), _hand_angles(right), bones], axis=-1)
+        # → (batch, T, 4 + 15 + 15 + 12) = (batch, T, 46)
+
+    def compute_output_shape(self, input_shape):
+        return (input_shape[0], input_shape[1], 46)
+
+
+@tf.keras.utils.register_keras_serializable(package="asl")
+def compute_angular_velocity(angles):
+    """Frame-to-frame angular velocity. Same shape as input, first frame is zeros."""
+    diff  = angles[:, 1:, :] - angles[:, :-1, :]
+    zeros = tf.zeros_like(angles[:, :1, :])
+    return tf.concat([zeros, diff], axis=1)
+
+@tf.keras.utils.register_keras_serializable(package="asl")
+def compute_velocity(x):
+    """Frame-to-frame raw coordinate velocity."""
+    diff  = x[:, 1:, :, :] - x[:, :-1, :, :]
+    zeros = tf.zeros_like(x[:, :1, :, :])
+    return tf.concat([zeros, diff], axis=1)
+
+# ══════════════════════════════════════════════════════════════════════
+# bigru_velocity_v1  (500 words)
+#   Raw coordinates + Raw velocity (NO Conv1D, NO BatchNorm)
+#   Exact clone of the proven bigru_bigger_v1 backbone
+# ══════════════════════════════════════════════════════════════════════
+
+def build_bigru_velocity_v1(num_classes: int) -> tf.keras.Model:
+    """
+    Minimal upgrade over bigru_bigger_v1 (the 88% champion):
+    - Raw coordinates  (T, 256)   — WHERE hands are
+    - Raw velocity     (T, 256)   — HOW hands move (simple frame diffs)
+    - NO Conv1D, NO BatchNorm, NO angles, NO SpatialDropout
+    - Same 512→256 BiGRU backbone that hit 88% val accuracy
+    
+    Input to GRU: raw(256) + velocity(256) = 512-d
+    """
+    input_data = tf.keras.Input(shape=(MAX_FRAMES, 64, 4), name="input_data")
+    input_mask = tf.keras.Input(shape=(MAX_FRAMES,), dtype=tf.bool, name="input_mask")
+
+    # ── Position: where the landmarks are ──
+    x_raw = tf.keras.layers.Reshape((MAX_FRAMES, 64 * 4))(input_data)       # (T, 256)
+
+    # ── Velocity: how the landmarks move (simple frame diffs, no processing) ──
+    velocity = tf.keras.layers.Lambda(compute_velocity)(input_data)          # (T, 64, 4)
+    x_vel = tf.keras.layers.Reshape((MAX_FRAMES, 64 * 4))(velocity)         # (T, 256)
+
+    # ── Merge: just concatenate, let the BiGRU figure it out ──
+    x = tf.keras.layers.Concatenate(axis=-1)([x_raw, x_vel])                # (T, 512)
+
+    # ── Proven BiGRU backbone (identical to bigru_bigger_v1) ──
+    x = tf.keras.layers.Bidirectional(
+        tf.keras.layers.GRU(512, return_sequences=True)
+    )(x, mask=input_mask)
+    x = tf.keras.layers.LayerNormalization()(x)
+    x = tf.keras.layers.Dropout(0.4)(x)
+
+    x = tf.keras.layers.Bidirectional(
+        tf.keras.layers.GRU(256)
+    )(x, mask=input_mask)
+    x = tf.keras.layers.LayerNormalization()(x)
+
+    # ── Classification head (identical to bigru_bigger_v1) ──
+    x = tf.keras.layers.Dropout(0.5)(x)
+    x = tf.keras.layers.Dense(512, activation="relu")(x)
+    x = tf.keras.layers.Dropout(0.4)(x)
+    x = tf.keras.layers.Dense(256, activation="relu")(x)
+    outputs = tf.keras.layers.Dense(num_classes, activation="softmax")(x)
+
+    return tf.keras.Model(
+        inputs=[input_data, input_mask], outputs=outputs,
+        name="bigru_velocity_v1"
+    )
+
+
+# ══════════════════════════════════════════════════════════════════════
+# bigru_velocity_biggest_v1  (2731 words)
+#   Same idea but 3-layer BiGRU 512→256→256 for the larger class space
+# ══════════════════════════════════════════════════════════════════════
+
+def build_bigru_velocity_biggest_v1(num_classes: int) -> tf.keras.Model:
+    """
+    Scaled-up version for 2731 words.
+    Same raw + velocity input, 3-layer BiGRU backbone.
+    
+    Input to GRU: raw(256) + velocity(256) = 512-d
+    """
+    input_data = tf.keras.Input(shape=(MAX_FRAMES, 64, 4), name="input_data")
+    input_mask = tf.keras.Input(shape=(MAX_FRAMES,), dtype=tf.bool, name="input_mask")
+
+    # ── Position + Velocity ──
+    x_raw = tf.keras.layers.Reshape((MAX_FRAMES, 64 * 4))(input_data)
+    velocity = tf.keras.layers.Lambda(compute_velocity)(input_data)
+    x_vel = tf.keras.layers.Reshape((MAX_FRAMES, 64 * 4))(velocity)
+    x = tf.keras.layers.Concatenate(axis=-1)([x_raw, x_vel])                # (T, 512)
+
+    # ── 3-layer BiGRU backbone ──
+    # Layer 1
+    x = tf.keras.layers.Bidirectional(
+        tf.keras.layers.GRU(512, return_sequences=True)
+    )(x, mask=input_mask)
+    x = tf.keras.layers.LayerNormalization()(x)
+    x = tf.keras.layers.Dropout(0.4)(x)
+
+    # Layer 2
+    x = tf.keras.layers.Bidirectional(
+        tf.keras.layers.GRU(256, return_sequences=True)
+    )(x, mask=input_mask)
+    x = tf.keras.layers.LayerNormalization()(x)
+    x = tf.keras.layers.Dropout(0.4)(x)
+
+    # Layer 3
+    x = tf.keras.layers.Bidirectional(
+        tf.keras.layers.GRU(256)
+    )(x, mask=input_mask)
+    x = tf.keras.layers.LayerNormalization()(x)
+
+    # ── Classification head ──
+    x = tf.keras.layers.Dropout(0.5)(x)
+    x = tf.keras.layers.Dense(1024, activation="relu")(x)
+    x = tf.keras.layers.Dropout(0.4)(x)
+    x = tf.keras.layers.Dense(512, activation="relu")(x)
+    outputs = tf.keras.layers.Dense(num_classes, activation="softmax")(x)
+
+    return tf.keras.Model(
+        inputs=[input_data, input_mask], outputs=outputs,
+        name="bigru_velocity_biggest_v1"
+    )
+
+
+# ══════════════════════════════════════════════════════════════════════
+# bigru_motion_v1
+#   Raw coordinates + CNN on Velocity + BiGRU
+# ══════════════════════════════════════════════════════════════════════
+
+def build_bigru_motion_v1(num_classes: int) -> tf.keras.Model:
+    """
+    Motion-aware BiGRU:
+    - Raw coordinates (position)
+    - Velocity (frame-to-frame motion)
+    - Conv1D extracts local motion patterns
+    - BiGRU models long-term temporal structure (scaled to 512->256)
+    """
+
+    input_data = tf.keras.Input(shape=(MAX_FRAMES, 64, 4), name="input_data")
+    input_mask = tf.keras.Input(shape=(MAX_FRAMES,), dtype=tf.bool, name="input_mask")
+
+    # ─────────────────────────────
+    # RAW FEATURES
+    # ─────────────────────────────
+    x_raw = tf.keras.layers.Reshape((MAX_FRAMES, 64 * 4))(input_data)  # (T, 256)
+
+    # ─────────────────────────────
+    # VELOCITY FEATURES
+    # ─────────────────────────────
+    velocity = tf.keras.layers.Lambda(compute_velocity)(input_data)
+    x_vel = tf.keras.layers.Reshape((MAX_FRAMES, 64 * 4))(velocity)
+
+    # Local motion extraction (scaled to 256 to match capacity)
+    x_vel = tf.keras.layers.Conv1D(256, kernel_size=5, padding="same", activation="relu")(x_vel)
+    x_vel = tf.keras.layers.BatchNormalization()(x_vel)
+
+    x_vel = tf.keras.layers.Conv1D(256, kernel_size=3, padding="same", activation="relu")(x_vel)
+    x_vel = tf.keras.layers.BatchNormalization()(x_vel)
+
+    x_vel = tf.keras.layers.Dropout(0.3)(x_vel)
+
+    # ─────────────────────────────
+    # MERGE RAW + MOTION
+    # ─────────────────────────────
+    x = tf.keras.layers.Concatenate(axis=-1)([x_raw, x_vel])
+
+    # Note: SpatialDropout1D omitted intentionally to prevent the underfitting we just analyzed!
+
+    # ─────────────────────────────
+    # TEMPORAL MODELING
+    # ─────────────────────────────
+    x = tf.keras.layers.Bidirectional(
+        tf.keras.layers.GRU(512, return_sequences=True)
+    )(x, mask=input_mask)
+    x = tf.keras.layers.LayerNormalization()(x)
+    x = tf.keras.layers.Dropout(0.4)(x)
+
+    x = tf.keras.layers.Bidirectional(
+        tf.keras.layers.GRU(256)
+    )(x, mask=input_mask)
+    x = tf.keras.layers.LayerNormalization()(x)
+
+    # ─────────────────────────────
+    # HEAD
+    # ─────────────────────────────
+    x = tf.keras.layers.Dropout(0.4)(x)
+    x = tf.keras.layers.Dense(512, activation="relu")(x)
+    x = tf.keras.layers.Dropout(0.4)(x)
+    x = tf.keras.layers.Dense(256, activation="relu")(x)
+
+    outputs = tf.keras.layers.Dense(num_classes, activation="softmax")(x)
+
+    return tf.keras.Model(
+        inputs=[input_data, input_mask],
+        outputs=outputs,
+        name="bigru_motion_v1"
+    )
+
+
+# ══════════════════════════════════════════════════════════════════════
+# bigru_bigger_angular_flash_v1  (500 words)
+#   2 BiGRU layers (256 → 128)  |  angles + angular-velocity  |  SpatialDropout
+# ══════════════════════════════════════════════════════════════════════
+
+def build_bigru_bigger_angular_flash_v1(num_classes: int) -> tf.keras.Model:
+    """
+    For ~500 words.
+    Fixes over angular_v1:
+      - KinematicFeatureLayer (proper Keras layer, no Lambda)
+      - Tighter acos clip (±0.99) → stable gradients
+      - Angular velocity concatenated (how fast angles change)
+      - SpatialDropout1D(0.2) before GRU
+    Input to GRU: raw(256) + angles(46) + ang_vel(46) = 348-d
+    """
+    input_data = tf.keras.Input(shape=(MAX_FRAMES, 64, 4), name="input_data")
+    input_mask = tf.keras.Input(shape=(MAX_FRAMES,), dtype=tf.bool, name="input_mask")
+
+    x_raw   = tf.keras.layers.Reshape((MAX_FRAMES, 64 * 4))(input_data)       # (T, 256)
+    angles  = KinematicFeatureLayer()(input_data)                              # (T, 46)
+    ang_vel = tf.keras.layers.Lambda(compute_angular_velocity)(angles)         # (T, 46)
+
+    x = tf.keras.layers.Concatenate(axis=-1)([x_raw, angles, ang_vel])        # (T, 348)
+
+    x = tf.keras.layers.Bidirectional(
+        tf.keras.layers.GRU(512, return_sequences=True)
+    )(x, mask=input_mask)
+    x = tf.keras.layers.LayerNormalization()(x)
+    x = tf.keras.layers.Dropout(0.4)(x)
+
+    x = tf.keras.layers.Bidirectional(
+        tf.keras.layers.GRU(256)
+    )(x, mask=input_mask)
+    x = tf.keras.layers.LayerNormalization()(x)
+
+    x = tf.keras.layers.Dropout(0.4)(x)
+    x = tf.keras.layers.Dense(512, activation="relu")(x)
+    x = tf.keras.layers.Dropout(0.4)(x)
+    x = tf.keras.layers.Dense(256, activation="relu")(x)
+    outputs = tf.keras.layers.Dense(num_classes, activation="softmax")(x)
+
+    return tf.keras.Model(
+        inputs=[input_data, input_mask], outputs=outputs,
+        name="bigru_bigger_angular_flash_v1"
+    )
+
+
+# ══════════════════════════════════════════════════════════════════════
+# bigru_biggest_angular_flash_v1  (2731 words)
+#   3 BiGRU layers (512 → 512 → 256)  |  angles + angular-velocity  |  SpatialDropout
+# ══════════════════════════════════════════════════════════════════════
+
+def build_bigru_biggest_angular_flash_v1(num_classes: int) -> tf.keras.Model:
+    """
+    For 2731 words. Same fixes as bigru_bigger_angular_flash_v1 but
+    scaled up with a 3-layer BiGRU backbone to handle the larger class space.
+    Input to GRU: raw(256) + angles(46) + ang_vel(46) = 348-d
+    """
+    input_data = tf.keras.Input(shape=(MAX_FRAMES, 64, 4), name="input_data")
+    input_mask = tf.keras.Input(shape=(MAX_FRAMES,), dtype=tf.bool, name="input_mask")
+
+    x_raw   = tf.keras.layers.Reshape((MAX_FRAMES, 64 * 4))(input_data)
+    angles  = KinematicFeatureLayer()(input_data)
+    ang_vel = tf.keras.layers.Lambda(compute_angular_velocity)(angles)
+
+    x = tf.keras.layers.Concatenate(axis=-1)([x_raw, angles, ang_vel])
+
+    # Layer 1
+    x = tf.keras.layers.Bidirectional(
+        tf.keras.layers.GRU(512, return_sequences=True)
+    )(x, mask=input_mask)
+    x = tf.keras.layers.LayerNormalization()(x)
+    x = tf.keras.layers.Dropout(0.4)(x)
+
+    # Layer 2
+    x = tf.keras.layers.Bidirectional(
+        tf.keras.layers.GRU(256, return_sequences=True)
+    )(x, mask=input_mask)
+    x = tf.keras.layers.LayerNormalization()(x)
+    x = tf.keras.layers.Dropout(0.4)(x)
+
+    # Layer 3
+    x = tf.keras.layers.Bidirectional(
+        tf.keras.layers.GRU(256)
+    )(x, mask=input_mask)
+    x = tf.keras.layers.LayerNormalization()(x)
+
+    x = tf.keras.layers.Dropout(0.4)(x)
+    x = tf.keras.layers.Dense(1024, activation="relu")(x)
+    x = tf.keras.layers.Dropout(0.4)(x)
+    x = tf.keras.layers.Dense(512, activation="relu")(x)
+    outputs = tf.keras.layers.Dense(num_classes, activation="softmax")(x)
+
+    return tf.keras.Model(
+        inputs=[input_data, input_mask], outputs=outputs,
+        name="bigru_biggest_angular_flash_v1"
+    )
+
 
 def build_bigru_bigger_v2(num_classes: int) -> tf.keras.Model:
     """
@@ -183,14 +799,14 @@ def build_bigru_bigger_v2(num_classes: int) -> tf.keras.Model:
 
     # Layer 1 (Massive Width)
     x = tf.keras.layers.Bidirectional(
-        tf.keras.layers.GRU(1024, return_sequences=True)
+        tf.keras.layers.GRU(1024, return_sequences=True)#, unroll=True)
     )(x, mask=input_mask)
     x = tf.keras.layers.LayerNormalization()(x)
     x = tf.keras.layers.Dropout(0.5)(x)
 
     # Layer 2
     x = tf.keras.layers.Bidirectional(
-        tf.keras.layers.GRU(512)
+        tf.keras.layers.GRU(512)#, unroll=True)  #unroll = False if breaks
     )(x, mask=input_mask)
     x = tf.keras.layers.LayerNormalization()(x)
 
@@ -249,6 +865,65 @@ def build_conv_bigru(num_classes: int) -> tf.keras.Model:
     return tf.keras.Model(
         inputs=[input_data, input_mask], outputs=outputs, name="conv_bigru"
     )
+def build_conv_only_v2(num_classes: int) -> tf.keras.Model:
+    """
+    Pure Convolutional model based on removing the BiGRU part.
+    """
+    input_data = tf.keras.Input(shape=(MAX_FRAMES, 64, 4), name="input_data")
+    input_mask = tf.keras.Input(shape=(MAX_FRAMES,), dtype=tf.bool, name="input_mask")
+
+    x = tf.keras.layers.Reshape((MAX_FRAMES, 64 * 4))(input_data)
+
+    x = tf.keras.layers.Conv1D(128, kernel_size=10, padding="same", activation="relu")(x)
+    x = tf.keras.layers.BatchNormalization()(x)
+    x = tf.keras.layers.Conv1D(128, kernel_size=20, padding="same", activation="relu")(x)
+    x = tf.keras.layers.BatchNormalization()(x)
+    x = tf.keras.layers.Dropout(0.3)(x)
+
+    # Pooling to remove the temporal dimension
+    float_mask = tf.keras.layers.Lambda(lambda m: tf.cast(m, tf.float32))(input_mask)
+    mask_expanded = tf.keras.layers.Lambda(lambda m: tf.expand_dims(m, -1))(float_mask)
+    x = tf.keras.layers.Multiply()([x, mask_expanded])
+    x_sum = tf.keras.layers.Lambda(lambda t: tf.reduce_sum(t, axis=1))(x)
+    mask_count = tf.keras.layers.Lambda(
+        lambda m: tf.maximum(tf.reduce_sum(m, axis=1, keepdims=True), 1.0)
+    )(float_mask)
+    x = tf.keras.layers.Lambda(lambda args: args[0] / args[1])([x_sum, mask_count])
+
+    x = tf.keras.layers.Dropout(0.4)(x)
+    x = tf.keras.layers.Dense(128, activation="relu")(x)
+    outputs = tf.keras.layers.Dense(num_classes, activation="softmax")(x)
+
+    return tf.keras.Model(
+        inputs=[input_data, input_mask], outputs=outputs, name="conv_only_v2"
+    )
+
+def build_conv_bigru_v3(num_classes: int) -> tf.keras.Model:
+    """
+    Conv1D with kernel size 20 into a 128 BiGRU.
+    """
+    input_data = tf.keras.Input(shape=(MAX_FRAMES, 64, 4), name="input_data")
+    input_mask = tf.keras.Input(shape=(MAX_FRAMES,), dtype=tf.bool, name="input_mask")
+
+    x = tf.keras.layers.Reshape((MAX_FRAMES, 64 * 4))(input_data)
+
+    x = tf.keras.layers.Conv1D(128, kernel_size=20, padding="same", activation="relu")(x)
+    x = tf.keras.layers.BatchNormalization()(x)
+    x = tf.keras.layers.Dropout(0.3)(x)
+
+    x = tf.keras.layers.Bidirectional(
+        tf.keras.layers.GRU(128)
+    )(x, mask=input_mask)
+    x = tf.keras.layers.LayerNormalization()(x)
+
+    x = tf.keras.layers.Dropout(0.4)(x)
+    x = tf.keras.layers.Dense(128, activation="relu")(x)
+    outputs = tf.keras.layers.Dense(num_classes, activation="softmax")(x)
+
+    return tf.keras.Model(
+        inputs=[input_data, input_mask], outputs=outputs, name="conv_bigru_v3"
+    )
+
 
 
 # ══════════════════════════════════════════════════════════════════════
@@ -285,6 +960,31 @@ def _tcn_block(x, filters: int, kernel_size: int, dilation_rate: int):
     return tf.keras.layers.Add()([residual, out])
 
 
+@tf.keras.utils.register_keras_serializable(package="asl")
+def cast_mask_to_float(m):
+    return tf.cast(m, tf.float32)
+
+
+@tf.keras.utils.register_keras_serializable(package="asl")
+def expand_mask_last_dim(m):
+    return tf.expand_dims(m, -1)
+
+
+@tf.keras.utils.register_keras_serializable(package="asl")
+def reduce_sum_over_time(t):
+    return tf.reduce_sum(t, axis=1)
+
+
+@tf.keras.utils.register_keras_serializable(package="asl")
+def safe_mask_count(m):
+    return tf.maximum(tf.reduce_sum(m, axis=1, keepdims=True), 1.0)
+
+
+@tf.keras.utils.register_keras_serializable(package="asl")
+def divide_with_mask(args):
+    return args[0] / args[1]
+
+
 def build_tcn(num_classes: int) -> tf.keras.Model:
     """
     WHY: TCN uses dilated convolutions to get exponentially growing
@@ -316,20 +1016,29 @@ def build_tcn(num_classes: int) -> tf.keras.Model:
     # ── Masked global average pooling ──
     # Zero out padded frames before averaging
     float_mask = tf.keras.layers.Lambda(
-        lambda m: tf.cast(m, tf.float32)
+        cast_mask_to_float,
+        output_shape=(MAX_FRAMES,),
     )(input_mask)  # (batch, 128)
     mask_expanded = tf.keras.layers.Lambda(
-        lambda m: tf.expand_dims(m, -1)
+        expand_mask_last_dim,
+        output_shape=(MAX_FRAMES, 1),
     )(float_mask)  # (batch, 128, 1)
 
     x = tf.keras.layers.Multiply()([x, mask_expanded])
 
     # Sum then divide by number of valid frames
-    x_sum = tf.keras.layers.Lambda(lambda t: tf.reduce_sum(t, axis=1))(x)
+    x_sum = tf.keras.layers.Lambda(
+        reduce_sum_over_time,
+        output_shape=(128,),
+    )(x)
     mask_count = tf.keras.layers.Lambda(
-        lambda m: tf.maximum(tf.reduce_sum(m, axis=1, keepdims=True), 1.0)
+        safe_mask_count,
+        output_shape=(1,),
     )(float_mask)
-    x = tf.keras.layers.Lambda(lambda args: args[0] / args[1])([x_sum, mask_count])
+    x = tf.keras.layers.Lambda(
+        divide_with_mask,
+        output_shape=(128,),
+    )([x_sum, mask_count])
 
     # ── Classification head ──
     x = tf.keras.layers.Dropout(0.4)(x)
@@ -548,10 +1257,20 @@ def build_dualpath_v2(num_classes: int) -> tf.keras.Model:
 MODEL_REGISTRY = {
     "original": build_original,
     "bigru_v2": build_bigru_v2,
-    "bigru_v3": build_bigru_v3,
+    "bigru_flash": build_bigru_v3,
+    "bigru_angular_v1": build_bigru_angular_v1,
     "bigru_bigger_v1": build_bigru_bigger_v1,
+    "bigru_bigger_angular_v1": build_bigru_bigger_angular_v1,
+    "bigru_bigger_angular_flash_v1": build_bigru_bigger_angular_flash_v1,
+    "bigru_biggest_angular_flash_v1": build_bigru_biggest_angular_flash_v1,
+    "bigru_angular": build_bigru_angular,
+    "bigru_motion_v1": build_bigru_motion_v1,
+    "bigru_velocity_v1": build_bigru_velocity_v1,
+    "bigru_velocity_biggest_v1": build_bigru_velocity_biggest_v1,
     "bigru_bigger_v2": build_bigru_bigger_v2,
     "conv_bigru": build_conv_bigru,
+    "conv_only_v2": build_conv_only_v2,
+    "conv_bigru_v3": build_conv_bigru_v3,
     "tcn": build_tcn,
     "conv1d": build_conv1d,
     "dualpath": build_dualpath,
