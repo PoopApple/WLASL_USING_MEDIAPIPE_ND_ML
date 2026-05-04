@@ -21,6 +21,7 @@ dataset_removed/
 ModelTrain/dataset3.0/
 ModelTrain/dataset1.0/
 ModelTrain/dataset2.0/
+ModelTrain/dataset4.0/
 
 gte9_dataset/
 gte9_landmarks/
@@ -75,3 +76,8 @@ Results/
 notes/understanding_gru_bigru_conv1d.md
 notes/
 *.task
+ExtractLandmarks/MISC/
+
+*.png
+
+*.md

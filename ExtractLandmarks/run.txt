@@ -1,3 +1,0 @@
-uv run nvim .
-
-uv run mprof run extract_all_landmarks.py

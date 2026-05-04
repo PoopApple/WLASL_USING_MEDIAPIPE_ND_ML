@@ -18,7 +18,7 @@ import os
 import datetime
 import tensorflow as tf
 
-MAX_FRAMES = 128
+MAX_FRAMES = 64   # 95.4% of trimmed segments fit in 64f; median=37f (was 128)
 
 
 # ══════════════════════════════════════════════════════════════════════

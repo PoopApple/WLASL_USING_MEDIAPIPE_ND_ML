@@ -29,7 +29,7 @@ from collections import defaultdict
 from sklearn.model_selection import train_test_split
 
 
-MAX_FRAMES = 128
+MAX_FRAMES = 64   # 95.4% of trimmed segments fit in 64f; median=37f (was 128)
 NUM_FEATURES = 64
 FEATURE_DIM = 4
 
@@ -43,7 +43,7 @@ class ASLDataPipeline:
         val_split: float = 0.15,
         test_split: float = 0.05,
         seed: int = 1234,
-        output_dir: str = "./dataset3.0",
+        output_dir: str = "./dataset4.0",
     ):
         """
         Args:

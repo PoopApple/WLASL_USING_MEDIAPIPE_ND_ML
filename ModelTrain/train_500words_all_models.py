@@ -19,7 +19,18 @@ import tensorflow as tf
 import matplotlib.pyplot as plt
 import os
 from data_pipeline import ASLDataPipeline
-from model import build_model, get_callbacks
+
+from model import build_model, get_callbacks, MODEL_REGISTRY
+import matplotlib
+matplotlib.use('Agg') # Headless mode for stability
+
+# Global GPU config — must only run once
+gpus = tf.config.list_physical_devices("GPU")
+for gpu in gpus:
+    try:
+        tf.config.experimental.set_memory_growth(gpu, True)
+    except RuntimeError:
+        pass
 
 
 # ══════════════════════════════════════════════════════════════════════
@@ -95,14 +106,10 @@ def main(
     MODEL_TYPE,
     RESUME_MODEL_PATH=None
 ):
-    # ── GPU ──
-    gpus = tf.config.list_physical_devices("GPU")
-    print(f"GPUs available: {gpus}")
-    for gpu in gpus:
-        tf.config.experimental.set_memory_growth(gpu, True)
+    # GPU config is handled at global scope
 
     # ── Data pipeline ──
-    output_dir = f"./dataset3.0/{NUM_WORDS or 'all'}words"
+    output_dir = f"./dataset4.0/{NUM_WORDS or 'all'}words"
     pipeline = ASLDataPipeline(
         dataset_dir=DATASET_DIR,
         num_words=NUM_WORDS,
@@ -259,14 +266,10 @@ def get_report(
     MODEL_PATH,
     SHOW_ALL_WORDS =False
 ):
-    # ── GPU ──
-    gpus = tf.config.list_physical_devices("GPU")
-    print(f"GPUs available: {gpus}")
-    for gpu in gpus:
-        tf.config.experimental.set_memory_growth(gpu, True)
+    # GPU config is handled at global scope
 
     # ── Data pipeline ──
-    output_dir = f"./dataset3.0/{NUM_WORDS or 'all'}words"
+    output_dir = f"./dataset4.0/{NUM_WORDS or 'all'}words"
     pipeline = ASLDataPipeline(
         dataset_dir=DATASET_DIR,
         num_words=NUM_WORDS,
@@ -365,9 +368,9 @@ def get_report(
 
 
 if __name__ == '__main______':
-    MODEL_PATH = "./dataset3.0/allwords/asl_bigru_bigger_v1_aug_allw_02-05-26__03-11_alltimebest.keras"
-    DATASET_DIR = "../ExtractLandmarks/dataset3.0/landmarks_npz"
-    NUM_WORDS = None
+    # MODEL_PATH = "./dataset4.0/allwords/asl_bigru_bigger_v1_aug_allw_02-05-26__03-11_alltimebest.keras"
+    DATASET_DIR = "../ExtractLandmarks/dataset4.0/landmarks_npz"
+    NUM_WORDS = 500
     BATCH_SIZE = 256  # 64 for bigru v2  .... 32 for dualpath (reduced from 128 to avoid CudnnRNNV3 memory issues)
     EPOCHS = 1000
     VAL_SPLIT = 0.20
@@ -400,195 +403,91 @@ if __name__ == '__main______':
         MODEL_PATH)
         # RESUME_MODEL_PATH
  
+
+
+
+# MODEL_REGISTRY is imported from model.py
+
+
+
+
+
+
 if __name__ == "__main__":
-    """MODEL_REGISTRY = {
-        "original": build_original,
-        "bigru_v2": build_bigru_v2,
-        "bigru_v3": build_bigru_v3,
-        "bigru_bigger_v1": build_bigru_bigger_v1, -- done already
-        "bigru_bigger_v2": build_bigru_bigger_v2, -- done
-        "conv_bigru": build_conv_bigru,
-        "conv_only_v2": build_conv_only_v2,
-        "conv_bigru_v3": build_conv_bigru_v3,
-        "tcn": build_tcn,
-        "conv1d": build_conv1d,
-        "dualpath": build_dualpath,
-        "dualpath_v2": build_dualpath_v2,
-    }"""
-    
-    DATASET_DIR = "../ExtractLandmarks/dataset3.0/landmarks_npz"
-    NUM_WORDS = None
-    BATCH_SIZE = 64  # 64 for bigru v2  .... 32 for dualpath (reduced from 128 to avoid CudnnRNNV3 memory issues)
+    DATASET_DIR = "../ExtractLandmarks/dataset4.0/landmarks_npz"
+    NUM_WORDS = 500
     EPOCHS = 1000
     VAL_SPLIT = 0.20
     TEST_SPLIT = 0.00
     SEED = 1234
-    LEARNING_RATE = 1e-4  # 1e-4 for bigru_bigger v1  ..... 1e-3 for rest
+    LEARNING_RATE = 1e-4
     PATIENCE = 15
     USE_TFRECORD = True
     USE_CLASS_WEIGHTS = True
     USE_AUGMENTATION = True
-    
-    #     BATCH_SIZE=128
-    MODEL_TYPE = "bigru_angular_v1"
 
-    main(
-        DATASET_DIR,
-        NUM_WORDS,
-        BATCH_SIZE,
-        EPOCHS,
-        VAL_SPLIT,
-        TEST_SPLIT,
-        SEED,
-        LEARNING_RATE,
-        PATIENCE,
-        USE_TFRECORD,
-        USE_CLASS_WEIGHTS,
-        USE_AUGMENTATION,
-        MODEL_TYPE,
-        # RESUME_MODEL_PATH
-    )
-    
-    
-    BATCH_SIZE = 64
-    MODEL_TYPE = "bigru_bigger_angular_v1"
-    
-    main(
-        DATASET_DIR,
-        NUM_WORDS,
-        BATCH_SIZE,
-        EPOCHS,
-        VAL_SPLIT,
-        TEST_SPLIT,
-        SEED,
-        LEARNING_RATE,
-        PATIENCE,
-        USE_TFRECORD,
-        USE_CLASS_WEIGHTS,
-        USE_AUGMENTATION,
-        MODEL_TYPE,
-        # RESUME_MODEL_PATH
-    )
-    
-    exit()
-    
-    MODEL_TYPE = "bigru_flash"
-    
-    main(
-        DATASET_DIR,
-        NUM_WORDS,
-        BATCH_SIZE,
-        EPOCHS,
-        VAL_SPLIT,
-        TEST_SPLIT,
-        SEED,
-        LEARNING_RATE,
-        PATIENCE,
-        USE_TFRECORD,
-        USE_CLASS_WEIGHTS,
-        USE_AUGMENTATION,
-        MODEL_TYPE,
-        # RESUME_MODEL_PATH
-    )
-    
-    MODEL_TYPE = "conv_bigru"
-    
-    main(
-        DATASET_DIR,
-        NUM_WORDS,
-        BATCH_SIZE,
-        EPOCHS,
-        VAL_SPLIT,
-        TEST_SPLIT,
-        SEED,
-        LEARNING_RATE,
-        PATIENCE,
-        USE_TFRECORD,
-        USE_CLASS_WEIGHTS,
-        USE_AUGMENTATION,
-        MODEL_TYPE,
-        # RESUME_MODEL_PATH
-    )
-    
-    MODEL_TYPE = "conv_only_v2"
-    
-    main(
-        DATASET_DIR,
-        NUM_WORDS,
-        BATCH_SIZE,
-        EPOCHS,
-        VAL_SPLIT,
-        TEST_SPLIT,
-        SEED,
-        LEARNING_RATE,
-        PATIENCE,
-        USE_TFRECORD,
-        USE_CLASS_WEIGHTS,
-        USE_AUGMENTATION,
-        MODEL_TYPE,
-        # RESUME_MODEL_PATH
-    )
-    
-    
-    
-    MODEL_TYPE = "conv_bigru_v3"
-    
-    main(
-        DATASET_DIR,
-        NUM_WORDS,
-        BATCH_SIZE,
-        EPOCHS,
-        VAL_SPLIT,
-        TEST_SPLIT,
-        SEED,
-        LEARNING_RATE,
-        PATIENCE,
-        USE_TFRECORD,
-        USE_CLASS_WEIGHTS,
-        USE_AUGMENTATION,
-        MODEL_TYPE,
-        # RESUME_MODEL_PATH
-    )
-    
-    
-    MODEL_TYPE = "tcn"
-    
-    main(
-        DATASET_DIR,
-        NUM_WORDS,
-        BATCH_SIZE,
-        EPOCHS,
-        VAL_SPLIT,
-        TEST_SPLIT,
-        SEED,
-        LEARNING_RATE,
-        PATIENCE,
-        USE_TFRECORD,
-        USE_CLASS_WEIGHTS,
-        USE_AUGMENTATION,
-        MODEL_TYPE,
-        # RESUME_MODEL_PATH
-    )
-    exit()
+    # List of models we want to train in this batch
+    models_to_train = [
+        "original",
+        "bigru_v2",
+        "bigru_flash",
+        "bigru_angular_v1",
+        "bigru_bigger_v1",
+        "bigru_bigger_v2",
+        "bigru_bigger_angular_v1",
+        "bigru_bigger_angular_flash_v1",
+        "conv_bigru",
+        "conv_only_v2",
+        "conv_bigru_v3",
+        "tcn",
+        "conv1d",
+        "dualpath",
+        "dualpath_v2"
+    ]
 
-    # DATASET_DIR = "../ExtractLandmarks/dataset3.0/landmarks_npz"
-    # NUM_WORDS = 1000
-    # BATCH_SIZE = 128  # 64 for bigru v2  .... 32 for dualpath
-    # EPOCHS = 1000
-    # VAL_SPLIT = 0.20
-    # TEST_SPLIT = 0.00
-    # SEED = 1234
-    # LEARNING_RATE = 1e-4  # 1e-4 for bigru_bigger v1  ..... 1e-3 for rest
-    # PATIENCE = 15
-    # USE_TFRECORD = True
-    # USE_CLASS_WEIGHTS = True
-    # USE_AUGMENTATION = True
-    # # ── Pick your model ──
-    # # "original" | "bigru_v2" | "bigru_v3" | "bigru_bigger_v1" | "bigru_bigger_v2" | "conv_bigru" | "tcn" | "conv1d" | "dualpath" | "dualpath_v2"
-    # MODEL_TYPE = "bigru_bigger_v2"
-    # # MODEL_TYPE = "conv_bigru"
-    # # MODEL_TYPE = "dualpath"
-    # # MODEL_TYPE = "dualpath_v2"
+    for model_type in models_to_train:
+        print(f"\n\n{'='*60}")
+        print(f" TRAINING MODEL: {model_type}")
+        print(f"{'='*60}\n")
+
+        # Set suitable batch size (DualPath is memory intensive)
+        batch_size = 64
+
+        if "bigger" in model_type:
+            batch_size = 128
+        elif "biggest" in model_type:
+            batch_size=64
+        else:
+            batch_size=256
+        if "dualpath" in model_type:
+            batch_size = 32
+        
+        try:
+            main(
+                DATASET_DIR,
+                NUM_WORDS,
+                batch_size,
+                EPOCHS,
+                VAL_SPLIT,
+                TEST_SPLIT,
+                SEED,
+                LEARNING_RATE,
+                PATIENCE,
+                USE_TFRECORD,
+                USE_CLASS_WEIGHTS,
+                USE_AUGMENTATION,
+                model_type
+            )
+        except Exception as e:
+            print(f"CRITICAL ERROR training {model_type}: {e}")
+        finally:
+            # IMPORTANT: Release GPU memory and reset state for the next model
+            print(f"Cleaning up session for {model_type}...")
+            tf.keras.backend.clear_session()
+            import gc
+            gc.collect()
+
+    print("\n\nAll training runs complete!")
 
     # main(
     #     DATASET_DIR,

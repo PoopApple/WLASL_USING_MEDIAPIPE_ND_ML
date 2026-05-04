@@ -6,6 +6,10 @@ from visualise_lms_in_3d import (
     infinite_plot_landmarks_compare2_sidebyside,
 )
 import os
+import shutil
+
+# motion_detection.py is a local copy of MotionTesting/motion_detection.py
+from motion_detection import get_final_extraction, DEFAULTS as MOTION_DEFAULTS
 
 """
 needed_poses = [0,2,5,7,8,9,10,11,12,13,15,14,16,23,24,17-22] #15+6 = 21
@@ -85,10 +89,19 @@ def normalise_lm_arr_spatially(basic_arr):
         )  # agar bychance distance 0 agaya
 
         for i in range(63):
+            vv = lms[i][3]  # visibility / presence score
+
+            # BUG FIX: If the landmark was not detected (visibility == 0), MediaPipe
+            # stores (0, 0, 0, 0). Subtracting the shoulder center would turn this into
+            # a non-zero vector (-shoulder_x, -shoulder_y, ...) which fakes displacement
+            # and creates spurious energy spikes when a hand first appears. Keep as zero.
+            if vv == 0.0:
+                arr[frame_ind, i] = [0.0, 0.0, 0.0, 0.0]
+                continue
+
             xx = lms[i][0] - CENTER_OF_SHOULDER[0]
             yy = lms[i][1] - CENTER_OF_SHOULDER[1]
             zz = lms[i][2] - CENTER_OF_SHOULDER[2]
-            vv = lms[i][3]
 
             arr[frame_ind, i] = [
                 xx / SHOULDER_LENGTH,
@@ -97,16 +110,14 @@ def normalise_lm_arr_spatially(basic_arr):
                 vv,
             ]
 
-            "64th landmark ko difference bw wrists rakhlete h"
-            xyz_of_left_wrist = lms[11, :3]
-            xyz_of_right_wrist = lms[12, :3]
-
-            diff_bw_wrists = xyz_of_left_wrist - xyz_of_right_wrist
-
-            vis_wrists = (lms[11, 3] + lms[12, 3]) / 2
-
-            arr[frame_ind, 63, :3] = diff_bw_wrists
-            arr[frame_ind, 63, 3] = vis_wrists
+        
+        "64th landmark ko difference bw wrists rakhlete h"
+        xyz_of_left_wrist  = arr[frame_ind, 11, :3]   # already normalised above
+        xyz_of_right_wrist = arr[frame_ind, 12, :3]
+        diff_bw_wrists     = xyz_of_left_wrist - xyz_of_right_wrist
+        vis_wrists         = (lms[11, 3] + lms[12, 3]) / 2
+        arr[frame_ind, 63, :3] = diff_bw_wrists
+        arr[frame_ind, 63, 3] = vis_wrists
     return arr
 
 
@@ -114,7 +125,7 @@ def normalise_lm_arr_temporally(arr):
     total_num_frames = arr.shape[0]
     # print(total_num_frames)
 
-    normalised_numb_of_frames = 128
+    normalised_numb_of_frames = 64   # 95.4% of trimmed segments fit in 64f; median=37f
     arr_padded = np.zeros((normalised_numb_of_frames, 64, 4), dtype=np.float32)
     mask = np.zeros(normalised_numb_of_frames, dtype=bool)
 
@@ -186,6 +197,41 @@ def process_one(input_path, output_path, flip=False):
         og_array = np.load(input_path)
         if flip:
             og_array = flip_raw_arr(og_array)
+
+        # ── Motion-based trimming ──────────────────────────────────────
+        # Extract only the active signing segment before normalisation.
+        # This removes idle frames at the start/end and camera-off sweeps.
+        total_frames = int(og_array[0, 0, 0])
+        frames_raw   = og_array[1:total_frames + 1]   # shape (T, 75, 4)
+
+        seg = get_final_extraction(frames_raw)         # uses DEFAULTS params
+        if seg is None:
+            # ── No signing segment: quarantine to NO_SEGMENTS/<word>/ ──
+            # output_path layout: <op_dataset_path>/<WORD>/<filename>.npy
+            word_name  = os.path.basename(os.path.dirname(output_path))
+            no_seg_dir = os.path.join(
+                os.path.dirname(os.path.dirname(output_path)),
+                "NO_SEGMENTS",
+                word_name,
+            )
+            os.makedirs(no_seg_dir, exist_ok=True)
+            dest = os.path.join(no_seg_dir, os.path.basename(input_path))
+            shutil.copy2(input_path, dest)
+            with open("normalising_logs.log", "a") as f:
+                f.write(f"NO_SEGMENT :: '{input_path}' -> '{dest}'\n")
+            return   # skip normalisation
+
+        seg_start, seg_end = seg
+        trimmed_raw = frames_raw[seg_start:seg_end]    # (T', 75, 4)
+
+        # Rebuild a minimal array that normalise_lm_arr_spatially expects:
+        # Row 0 = metadata [total_frames, fps, ...], rows 1..N = frames.
+        trimmed_len = len(trimmed_raw)
+        meta_row    = og_array[0:1].copy()
+        meta_row[0, 0, 0] = trimmed_len           # update frame count
+        og_array    = np.concatenate([meta_row, trimmed_raw], axis=0)
+        # ──────────────────────────────────────────────────────────────
+
         spatially_normalised_arr = normalise_lm_arr_spatially(og_array)
         temporally_spatially_normalised_arr, mask = normalise_lm_arr_temporally(
             spatially_normalised_arr
@@ -196,7 +242,6 @@ def process_one(input_path, output_path, flip=False):
             npz_path = output_path[:-4] + ".npz"
         print(npz_path)
         np.savez(npz_path, data=temporally_spatially_normalised_arr, mask=mask)
-        # np.save(input_path, temporally_spatially_normalised_arr)
     except Exception as e:
         with open("normalising_logs.log", "a") as f:
             f.write(f"path:'{input_path}' :: error:'{e}'\n")
@@ -222,8 +267,8 @@ def process_all(
 
 
 if __name__ == "__main__":
-    dataset_path = "./dataset3.0/landmarks/"
-    op_dataset_path = "./dataset3.0/landmarks_npz/"
+    dataset_path = "/run/media/aryan/PoopiDrive/projects_linux/microsoft asl citizen/landmarks/"
+    op_dataset_path = "./dataset4.0/landmarks_npz/"
 
     # process_one("./test_actor.npy", "./test_actor.npz")
 

@@ -17,8 +17,8 @@ from data_pipeline import ASLDataPipeline
 # CONFIG — edit these directly (keep in sync with train_v2.py)
 # ══════════════════════════════════════════════════════════════════════
 
-DATASET_DIR = "../ExtractLandmarks/dataset3.0/landmarks_npz"
-NUM_WORDS = None
+DATASET_DIR = "../ExtractLandmarks/dataset4.0/landmarks_npz"
+NUM_WORDS = 500
 BATCH_SIZE = 64
 VAL_SPLIT = 0.20
 TEST_SPLIT = 0.00
@@ -65,8 +65,8 @@ def write_shards(paths: np.ndarray, labels: np.ndarray, output_dir: str, split_n
         with tf.io.TFRecordWriter(shard_path) as writer:
             for i in range(start, end):
                 npz = np.load(paths[i])
-                data = npz["data"]   # (128, 64, 4) float32
-                mask = npz["mask"]   # (128,) bool
+                data = npz["data"]   # (64, 64, 4) float32
+                mask = npz["mask"]   # (64,) bool
                 label = int(labels[i])
 
                 writer.write(serialize_example(data, mask, label))
@@ -79,7 +79,7 @@ def write_shards(paths: np.ndarray, labels: np.ndarray, output_dir: str, split_n
 
 
 def main():
-    output_dir = f"./dataset3.0/{NUM_WORDS or 'all'}words"
+    output_dir = f"./dataset4.0/{NUM_WORDS or 'all'}words"
 
     # Use the same pipeline to get identical splits
     pipeline = ASLDataPipeline(
