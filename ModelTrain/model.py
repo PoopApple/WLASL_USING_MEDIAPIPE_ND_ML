@@ -782,6 +782,46 @@ def build_bigru_biggest_angular_flash_v1(num_classes: int) -> tf.keras.Model:
     )
 
 
+
+def build_bigru_biggest_v1(num_classes: int) -> tf.keras.Model:
+
+    input_data = tf.keras.Input(shape=(MAX_FRAMES, 64, 4), name="input_data")
+    input_mask = tf.keras.Input(shape=(MAX_FRAMES,), dtype=tf.bool, name="input_mask")
+
+    x   = tf.keras.layers.Reshape((MAX_FRAMES, 64 * 4))(input_data)
+
+    # Layer 1
+    x = tf.keras.layers.Bidirectional(
+        tf.keras.layers.GRU(512, return_sequences=True)
+    )(x, mask=input_mask)
+    x = tf.keras.layers.LayerNormalization()(x)
+    x = tf.keras.layers.Dropout(0.4)(x)
+
+    # Layer 2
+    x = tf.keras.layers.Bidirectional(
+        tf.keras.layers.GRU(256, return_sequences=True)
+    )(x, mask=input_mask)
+    x = tf.keras.layers.LayerNormalization()(x)
+    x = tf.keras.layers.Dropout(0.4)(x)
+
+    # Layer 3
+    x = tf.keras.layers.Bidirectional(
+        tf.keras.layers.GRU(256)
+    )(x, mask=input_mask)
+    x = tf.keras.layers.LayerNormalization()(x)
+
+    x = tf.keras.layers.Dropout(0.4)(x)
+    x = tf.keras.layers.Dense(1024, activation="relu")(x)
+    x = tf.keras.layers.Dropout(0.4)(x)
+    x = tf.keras.layers.Dense(512, activation="relu")(x)
+    outputs = tf.keras.layers.Dense(num_classes, activation="softmax")(x)
+
+    return tf.keras.Model(
+        inputs=[input_data, input_mask], outputs=outputs,
+        name="bigru_biggest_v1"
+    )
+
+
 def build_bigru_bigger_v2(num_classes: int) -> tf.keras.Model:
     """
     The ultimate scaled-up model: bigru_bigger_v2.
@@ -959,6 +999,24 @@ def _tcn_block(x, filters: int, kernel_size: int, dilation_rate: int):
 
     return tf.keras.layers.Add()([residual, out])
 
+def _tcn_block_v2(x, filters, kernel_size, dilation_rate):
+    residual = x
+
+    out = tf.keras.layers.Conv1D(
+        filters,
+        kernel_size,
+        padding="causal",
+        dilation_rate=dilation_rate,
+        activation="relu",
+    )(x)
+
+    # optional: lighter normalization
+    # out = tf.keras.layers.LayerNormalization()(out)
+
+    if residual.shape[-1] != filters:
+        residual = tf.keras.layers.Conv1D(filters, 1, padding="same")(residual)
+
+    return tf.keras.layers.Add()([residual, out])
 
 @tf.keras.utils.register_keras_serializable(package="asl")
 def cast_mask_to_float(m):
@@ -1008,10 +1066,10 @@ def build_tcn(num_classes: int) -> tf.keras.Model:
     # dilation 4: sees 15 frames
     # dilation 8: sees 31 frames
     # Combined: sees 128+ frames (full sequence coverage)
-    x = _tcn_block(x, filters=128, kernel_size=3, dilation_rate=1)
-    x = _tcn_block(x, filters=128, kernel_size=3, dilation_rate=2)
-    x = _tcn_block(x, filters=128, kernel_size=3, dilation_rate=4)
-    x = _tcn_block(x, filters=128, kernel_size=3, dilation_rate=8)
+    x = _tcn_block_v2(x, filters=128, kernel_size=3, dilation_rate=1)
+    x = _tcn_block_v2(x, filters=128, kernel_size=3, dilation_rate=2)
+    x = _tcn_block_v2(x, filters=128, kernel_size=3, dilation_rate=4)
+    x = _tcn_block_v2(x, filters=128, kernel_size=3, dilation_rate=8)
 
     # ── Masked global average pooling ──
     # Zero out padded frames before averaging
@@ -1275,6 +1333,7 @@ MODEL_REGISTRY = {
     "conv1d": build_conv1d,
     "dualpath": build_dualpath,
     "dualpath_v2": build_dualpath_v2,
+    "bigru_biggest_v1":build_bigru_biggest_v1,
 }
 
 
@@ -1288,35 +1347,126 @@ def build_model(name: str, num_classes: int) -> tf.keras.Model:
 # Callbacks
 # ══════════════════════════════════════════════════════════════════════
 
+class OverfitGuard(tf.keras.callbacks.Callback):
+    """Hard-stop when (train_acc - val_acc) exceeds max_gap.
+
+    Semantics across training phases:
+    - Early epochs (val_acc > train_acc due to augmentation):
+        gap = train_acc - val_acc  →  NEGATIVE  →  never triggers.
+        The math handles this naturally; no special casing needed.
+    - Post-crossover (train_acc > val_acc):
+        gap becomes positive. Once it exceeds max_gap → stop.
+
+    grace_epochs is a safety buffer for the first few noisy epochs
+    where both accuracies are near zero and the ratio is unstable.
+    The crossover in typical runs happens around epoch 40-50, so
+    grace_epochs=50 means the guard only arms after we've confirmed
+    normal training dynamics are established.
+
+    Args:
+        max_gap:      Max allowed (train_acc - val_acc). Default 0.08 (8%).
+        grace_epochs: Epochs to skip before activating. Default 50.
+    """
+
+    def __init__(self, max_gap: float = 0.08, grace_epochs: int = 50):
+        super().__init__()
+        self.max_gap = max_gap
+        self.grace_epochs = grace_epochs
+
+    def on_epoch_end(self, epoch, logs=None):
+        if epoch < self.grace_epochs:
+            return
+        train_acc = logs.get("accuracy", 0.0)
+        val_acc   = logs.get("val_accuracy", 0.0)
+        gap = train_acc - val_acc  # negative when val > train → safe
+        if gap > self.max_gap:
+            print(
+                f"\n[OverfitGuard] Stopping at epoch {epoch}: "
+                f"train={train_acc:.4f}, val={val_acc:.4f}, "
+                f"gap={gap:.4f} > threshold={self.max_gap:.4f}"
+            )
+            self.model.stop_training = True
+
+
 def get_callbacks(model_dir: str, model_name: str | None = None, patience: int = 15):
+    """Callback suite designed to stop training at the right time.
+
+    ── Why val_accuracy (not val_loss + min_delta) for EarlyStopping? ──
+    Under label smoothing the loss surface is shifted: val_loss keeps
+    making micro-improvements (e.g. 1.7249 → 1.7240 over 50 epochs)
+    even after val_accuracy has completely flatlined. With or without
+    min_delta, those micro-improvements reset EarlyStopping's counter
+    and the run never terminates. val_accuracy is immune to this because
+    it is discrete and actually plateaus when learning stops.
+
+    ── Why min_delta=0.001 on val_accuracy? ──
+    Without min_delta, a 0.0001 acc improvement (noise-level) resets the
+    counter. With min_delta=0.001 the model must gain ≥0.1 pp per patience
+    window or EarlyStopping fires.
+
+    ── Why is ReduceLROnPlateau still on val_loss? ──
+    LR scheduling works better on a smooth signal (loss) rather than a
+    noisy one (accuracy). But min_delta=0.001 prevents it from triggering
+    on pure noise fluctuations.
+
+    ── OverfitGuard gap threshold = 8% ──
+    Empirically, train-val acc gap grows from ~7% at epoch 82 to ~13%
+    by epoch 176 with essentially zero val_acc gain. The guard fires at
+    8% to cut the wasted tail. grace_epochs=50 arms it after the natural
+    crossover point (~epoch 44) where val_acc stops exceeding train_acc.
+    """
     if model_name is None:
         model_name = datetime.datetime.now().strftime("%d-%m-%y__%H-%M")
 
     os.makedirs(model_dir, exist_ok=True)
 
     return [
+        # ── Primary checkpoint: best val_accuracy ──
         tf.keras.callbacks.ModelCheckpoint(
             filepath=os.path.join(model_dir, f"asl_{model_name}_best.keras"),
             save_best_only=True,
-            monitor="val_loss",
+            monitor="val_accuracy",
+            mode="max",
             verbose=1,
         ),
+        # ── All-time-best checkpoint (separate file, never regresses) ──
+        tf.keras.callbacks.ModelCheckpoint(
+            filepath=os.path.join(model_dir, f"asl_{model_name}_alltimebest.keras"),
+            save_best_only=True,
+            monitor="val_accuracy",
+            mode="max",
+            verbose=0,
+        ),
+        # ── Early stopping on val_accuracy ──
+        # monitor="val_accuracy" + mode="max": stops when acc stops growing.
+        # min_delta=0.001: a 0.1 pp improvement is the minimum that "counts".
+        # restore_best_weights: rolls back to the epoch with best val_acc.
         tf.keras.callbacks.EarlyStopping(
             patience=patience,
             restore_best_weights=True,
-            monitor="val_loss",
+            monitor="val_accuracy",
+            mode="max",
+            min_delta=0.001,
             verbose=1,
         ),
+        # ── CSV logger ──
         tf.keras.callbacks.CSVLogger(
             os.path.join(model_dir, f"asl_{model_name}_log.csv"),
             separator=",",
             append=False,
         ),
+        # ── LR scheduler (on val_loss for smooth signal) ──
+        # patience=5 fires well before EarlyStopping patience=15, giving
+        # LR reduction a fair chance before the run is terminated.
+        # min_delta=0.001: must improve val_loss by at least 0.001 absolute.
         tf.keras.callbacks.ReduceLROnPlateau(
             monitor="val_loss",
             factor=0.5,
             patience=5,
             min_lr=1e-6,
+            min_delta=0.001,
             verbose=1,
         ),
+        # ── Overfit guard: hard-stop at 8% train-val gap ──
+        OverfitGuard(max_gap=0.08, grace_epochs=50),
     ]

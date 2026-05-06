@@ -24,6 +24,30 @@ from model import build_model, get_callbacks, MODEL_REGISTRY
 import matplotlib
 matplotlib.use('Agg') # Headless mode for stability
 
+
+class LabelSmoothingSparseCCE(tf.keras.losses.Loss):
+    """SparseCategoricalCrossentropy with label smoothing.
+
+    Keras' SparseCategoricalCrossentropy doesn't support label_smoothing,
+    so we convert to one-hot and use CategoricalCrossentropy internally.
+
+    smoothing=0.1 spreads 10% of probability mass uniformly across all classes,
+    preventing the model from becoming overconfident on training examples.
+    """
+    def __init__(self, smoothing=0.1, **kwargs):
+        super().__init__(**kwargs)
+        self.smoothing = smoothing
+
+    def call(self, y_true, y_pred):
+        n = tf.cast(tf.shape(y_pred)[-1], tf.float32)
+        y_oh = tf.one_hot(tf.cast(y_true, tf.int32), tf.shape(y_pred)[-1])
+        y_smooth = y_oh * (1.0 - self.smoothing) + (self.smoothing / n)
+        return tf.keras.losses.categorical_crossentropy(y_smooth, y_pred)
+
+    def get_config(self):
+        return {**super().get_config(), "smoothing": self.smoothing}
+
+
 # Global GPU config — must only run once
 gpus = tf.config.list_physical_devices("GPU")
 for gpu in gpus:
@@ -149,10 +173,15 @@ def main(
 
     # ── Compile ──
     model.compile(
-        optimizer=tf.keras.optimizers.Adam(learning_rate=LEARNING_RATE, clipnorm=5.0),
-        loss="sparse_categorical_crossentropy",
+        # AdamW: decouples weight decay from adaptive LR update (mathematically correct
+        # regularization). weight_decay=1e-4 targets the ~5× train/val loss gap.
+        optimizer=tf.keras.optimizers.AdamW(learning_rate=LEARNING_RATE, weight_decay=1e-4, clipnorm=5.0),
+        # Label smoothing (ε=0.1): prevents overconfident train predictions.
+        # Complements AdamW — AdamW controls weight magnitude, this controls output confidence.
+        loss=LabelSmoothingSparseCCE(smoothing=0.1),
         metrics=[
             "accuracy",
+            tf.keras.metrics.SparseTopKCategoricalAccuracy(k=3, name="top3_acc"),
             tf.keras.metrics.SparseTopKCategoricalAccuracy(k=5, name="top5_acc"),
         ],
     )
@@ -195,7 +224,8 @@ def main(
 
     print("\n" + "=" * 60)
     print("Test set evaluation:")
-    results = model.evaluate(test_ds)
+    results = model.evaluate(test_ds, steps=val_steps)
+
     for name, val in zip(model.metrics_names, results):
         print(f"  {name}: {val:.4f}")
 
@@ -324,7 +354,8 @@ def get_report(
 
     print("\n" + "=" * 60)
     print("Test set evaluation:")
-    results = model.evaluate(test_ds)
+    results = model.evaluate(test_ds, steps=val_steps)
+
     for name, val in zip(model.metrics_names, results):
         print(f"  {name}: {val:.4f}")
 
@@ -377,7 +408,7 @@ if __name__ == '__main______':
     TEST_SPLIT = 0.00
     SEED = 1234
     LEARNING_RATE = 1e-4  # 1e-4 for bigru_bigger v1  ..... 1e-3 for rest
-    PATIENCE = 15
+    PATIENCE = 10
     USE_TFRECORD = True
     USE_CLASS_WEIGHTS = True
     USE_AUGMENTATION = True
@@ -421,28 +452,28 @@ if __name__ == "__main__":
     TEST_SPLIT = 0.00
     SEED = 1234
     LEARNING_RATE = 1e-4
-    PATIENCE = 15
+    PATIENCE = 10
     USE_TFRECORD = True
     USE_CLASS_WEIGHTS = True
     USE_AUGMENTATION = True
 
     # List of models we want to train in this batch
     models_to_train = [
-        "original",
-        "bigru_v2",
-        "bigru_flash",
-        "bigru_angular_v1",
-        "bigru_bigger_v1",
-        "bigru_bigger_v2",
-        "bigru_bigger_angular_v1",
-        "bigru_bigger_angular_flash_v1",
-        "conv_bigru",
-        "conv_only_v2",
-        "conv_bigru_v3",
-        "tcn",
-        "conv1d",
-        "dualpath",
-        "dualpath_v2"
+        # "original",
+        # "bigru_v2",
+        # "bigru_flash",
+        # "bigru_angular_v1",
+        # "bigru_bigger_v1",
+        # "bigru_bigger_v2",
+        # "bigru_bigger_angular_v1",
+        # "bigru_bigger_angular_flash_v1",
+        # "conv_bigru",
+        # "conv_only_v2", #skipping due to gpu not being strong
+        # "conv_bigru_v3",
+        # "tcn",
+        # "conv1d",
+        # "dualpath",
+        # "dualpath_v2"
     ]
 
     for model_type in models_to_train:
@@ -461,7 +492,83 @@ if __name__ == "__main__":
             batch_size=256
         if "dualpath" in model_type:
             batch_size = 32
+        if "conv" in model_type:
+            batch_size=64
+        if "tcn" in model_type:
+            batch_size=2
         
+        try:
+            main(
+                DATASET_DIR,
+                NUM_WORDS,
+                batch_size,
+                EPOCHS,
+                VAL_SPLIT,
+                TEST_SPLIT,
+                SEED,
+                LEARNING_RATE,
+                PATIENCE,
+                USE_TFRECORD,
+                USE_CLASS_WEIGHTS,
+                USE_AUGMENTATION,
+                model_type
+            )
+        except Exception as e:
+            print(f"CRITICAL ERROR training {model_type}: {e}")
+        finally:
+            # IMPORTANT: Release GPU memory and reset state for the next model
+            print(f"Cleaning up session for {model_type}...")
+            tf.keras.backend.clear_session()
+            import gc
+            gc.collect()
+
+    print("\n\nAll training runs complete!")
+
+
+    DATASET_DIR = "../ExtractLandmarks/dataset4.0/landmarks_npz"
+    NUM_WORDS = None
+    EPOCHS = 1000
+    VAL_SPLIT = 0.20
+    TEST_SPLIT = 0.00
+    SEED = 1234
+    LEARNING_RATE = 1e-4
+    PATIENCE = 10
+    USE_TFRECORD = True
+    USE_CLASS_WEIGHTS = True
+    USE_AUGMENTATION = True
+
+    # List of models we want to train in this batch
+    models_to_train = [
+        # "original",
+        # "bigru_v2",  ## done
+        # "bigru_flash",
+        # "bigru_angular_v1",
+        "bigru_bigger_v1",
+        "bigru_bigger_v2",
+        "bigru_bigger_angular_v1",
+        # "bigru_bigger_angular_flash_v1",
+        # "conv_bigru",
+        # "conv_only_v2",
+        # "conv_bigru_v3",
+        # "tcn",
+        # "conv1d",
+        # "dualpath",
+        # "dualpath_v2",
+        "bigru_biggest_v1"
+    ]
+
+    for model_type in models_to_train:
+        print(f"\n\n{'='*60}")
+        print(f" TRAINING MODEL: {model_type}")
+        print(f"{'='*60}\n")
+
+        # Set suitable batch size (DualPath is memory intensive)
+        batch_size = 256
+
+        if "biggest" in model_type:
+            batch_size=32
+        if "angular" in model_type:
+            batch_size=64
         try:
             main(
                 DATASET_DIR,

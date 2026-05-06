@@ -18,7 +18,7 @@ from data_pipeline import ASLDataPipeline
 # ══════════════════════════════════════════════════════════════════════
 
 DATASET_DIR = "../ExtractLandmarks/dataset4.0/landmarks_npz"
-NUM_WORDS = 500
+NUM_WORDS = None
 BATCH_SIZE = 64
 VAL_SPLIT = 0.20
 TEST_SPLIT = 0.00
