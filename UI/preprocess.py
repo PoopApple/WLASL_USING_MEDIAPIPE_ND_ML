@@ -1,5 +1,7 @@
 import numpy as np
 
+TARGET_FRAMES = 64  # Must match MAX_FRAMES in ModelTrain/model.py
+
 def process_landmarks(lms_75):
     """
     lms_75: numpy array of shape (75, 4)
@@ -35,12 +37,16 @@ def process_landmarks(lms_75):
         zz = lms[i][2] - CENTER_OF_SHOULDER[2]
         vv = lms[i][3]
 
-        out_arr[i] = [
-            xx / SHOULDER_LENGTH,
-            yy / SHOULDER_LENGTH,
-            zz,
-            vv,
-        ]
+        # Ghost-zero guard: only normalise if landmark is visible
+        if vv > 0.0:
+            out_arr[i] = [
+                xx / SHOULDER_LENGTH,
+                yy / SHOULDER_LENGTH,
+                zz,
+                vv,
+            ]
+        else:
+            out_arr[i] = [0.0, 0.0, 0.0, 0.0]
 
     xyz_of_left_wrist = lms[11, :3]
     xyz_of_right_wrist = lms[12, :3]
@@ -53,19 +59,33 @@ def process_landmarks(lms_75):
 
     return out_arr
 
-def normalise_lm_arr_temporally(arr):
+
+def normalise_lm_arr_temporally(arr, target_frames=TARGET_FRAMES):
+    """
+    Temporally resample/pad a (T, 64, 4) landmark array to (target_frames, 64, 4).
+    
+    - If T > target_frames : uniformly subsample (speedup)
+    - If T < target_frames : zero-pad with mask=False for padded frames
+    - If T == target_frames: pass through
+    
+    Returns
+    -------
+    arr_padded : np.ndarray, shape (target_frames, 64, 4)
+    mask       : np.ndarray, shape (target_frames,), dtype=bool
+                 True where real data exists, False for padding.
+    """
     total_num_frames = arr.shape[0]
 
-    normalised_numb_of_frames = 128
-    arr_padded = np.zeros((normalised_numb_of_frames, 64, 4), dtype=np.float32)
-    mask = np.zeros(normalised_numb_of_frames, dtype=bool)
+    arr_padded = np.zeros((target_frames, 64, 4), dtype=np.float32)
+    mask = np.zeros(target_frames, dtype=bool)
 
-    if total_num_frames == normalised_numb_of_frames:
+    if total_num_frames == target_frames:
         arr_padded[:] = arr[:]
         mask[:] = True
-    elif total_num_frames > normalised_numb_of_frames:
+    elif total_num_frames > target_frames:
+        # Uniform subsampling — spreads evenly across the sequence
         indices = np.round(
-            np.linspace(0, total_num_frames - 1, normalised_numb_of_frames)
+            np.linspace(0, total_num_frames - 1, target_frames)
         ).astype(int)
         arr_padded[:] = arr[indices]
         mask[:] = True
@@ -76,34 +96,13 @@ def normalise_lm_arr_temporally(arr):
     return arr_padded, mask
 
 
-# Pose landmark indices in the PROCESSED array (mapped via needed_poses list).
+# ── Pose landmark indices in the PROCESSED array ──────────────────────────────
 # needed_poses = [0, 2, 5, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24]
-# Maps raw index → processed index (only pairs that both appear in needed_poses matter).
 _POSE_LR_PAIRS_PROCESSED = [
-    # (left_processed_idx, right_processed_idx)
-    # raw (7,8)   → processed (3, 4)
-    (3, 4),
-    # raw (9,10)  → processed (5, 6)
-    (5, 6),
-    # raw (11,12) → processed (7, 8)
-    (7, 8),
-    # raw (13,14) → processed (9, 10)
-    (9, 10),
-    # raw (15,16) → processed (11, 12)
-    (11, 12),
-    # raw (17,18) → processed (13, 14)
-    (13, 14),
-    # raw (19,20) → processed (15, 16)
-    (15, 16),
-    # raw (21,22) → processed (17, 18)
-    (17, 18),
-    # raw (23,24) → processed (19, 20)
-    (19, 20),
+    (3, 4), (5, 6), (7, 8), (9, 10), (11, 12),
+    (13, 14), (15, 16), (17, 18), (19, 20),
 ]
 
-# In the processed array:
-#   indices 21-41  = left hand  (raw 33-53)
-#   indices 42-62  = right hand (raw 54-74)
 _LEFT_HAND_SLICE  = slice(21, 42)
 _RIGHT_HAND_SLICE = slice(42, 63)
 
@@ -111,32 +110,16 @@ _RIGHT_HAND_SLICE = slice(42, 63)
 def flip_processed_arr(arr):
     """
     Horizontally flip a processed (T, 64, 4) landmark array.
-    Mirrors x-coordinates and swaps left/right body-side features,
-    matching the flip_raw_arr transform applied during training.
-
-    Args:
-        arr: np.ndarray of shape (T, 64, 4)
-    Returns:
-        flipped: same shape (T, 64, 4)
     """
     flipped = arr.copy()
-
-    # 1. Mirror x for all non-zero landmarks
     nonzero = flipped[:, :, 0] != 0.0
-    flipped[nonzero, 0] = -flipped[nonzero, 0]  # already shoulder-centred, so negate x
-
-    # 2. Swap left/right hand segments
+    flipped[nonzero, 0] = -flipped[nonzero, 0]
     left_hand  = flipped[:, _LEFT_HAND_SLICE, :].copy()
     flipped[:, _LEFT_HAND_SLICE, :]  = flipped[:, _RIGHT_HAND_SLICE, :]
     flipped[:, _RIGHT_HAND_SLICE, :] = left_hand
-
-    # 3. Swap paired left/right pose landmarks
     for l_idx, r_idx in _POSE_LR_PAIRS_PROCESSED:
         left_lm = flipped[:, l_idx, :].copy()
         flipped[:, l_idx, :] = flipped[:, r_idx, :]
         flipped[:, r_idx, :] = left_lm
-
-    # 4. Negate the wrist-diff feature's x component (index 63, channel 0)
     flipped[:, 63, 0] = -flipped[:, 63, 0]
-
     return flipped

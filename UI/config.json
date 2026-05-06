@@ -1,15 +1,26 @@
 {
-    "sequence_length": 128,
-    "inference_interval": 70,
+    "sequence_length": 64,
     "camera_index": 0,
     "pose_model": "heavy",
     "video_file": "/run/media/aryan/PoopiDrive/projects_linux/microsoft asl citizen/ASL_Citizen/videos/ABSOLUTELYNOTHING_06979518188270073-ABSOLUTELY NOTHING.mp4",
     "prediction_model": "/home/aryan/projects_linux/WLASL_USING_MEDIAPIPE_ND_ML/UI/ASL_Models/asl_bigru_bigger_v1_aug_allw_02-05-26__03-11_alltimebest.keras",
     "draw_landmarks": true,
     "random_video_folder": "/run/media/aryan/PoopiDrive/projects_linux/microsoft asl citizen/ASL_Citizen/videos",
-    "motion_energy_segmentation": true,
-    "motion_energy_start_threshold": 0.015,
-    "motion_energy_end_threshold": 0.008,
-    "motion_energy_cooldown_frames": 10,
-    "motion_energy_min_sign_frames": 15
+    "print_predictions": false,
+
+    "buffer_size": 256,
+    "motion_check_interval": 5,
+
+    "motion_start_threshold": 0.013,
+    "motion_end_threshold": 0.008,
+    "motion_cooldown_frames": 15,
+    "motion_min_sign_frames": 10,
+    "motion_method": "max_hand",
+    "motion_top_k": 12,
+    "motion_tip_weight": 1.5,
+    "motion_head_pad": 5,
+    "motion_vis_thresh": 0.05,
+
+    "temporal_windows": [256, 128, 64],
+    "target_frames": 64
 }
