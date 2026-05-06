@@ -20,11 +20,11 @@ HEADER_KV_PATTERN = re.compile(r"^\s*([A-Za-z_]+)\s*:\s*([0-9]*\.?[0-9]+)\s*$")
 
 
 # CONFIG (edit directly here)
-ROOT_DIR = "dataset4.0/allwords"
-OUTPUT_DIR = "../Results/dataset4_allwords_analysis"
-DATASET_DIR = "../ExtractLandmarks/dataset4.0/landmarks_npz"
-JSON_FILE_NAME = "dataset4_allw_model_metrics.json"
-NUM_WORDS = 2731
+ROOT_DIR = "dataset3.0/500words"
+OUTPUT_DIR = "../Results/dataset3_500words_analysis"
+DATASET_DIR = "../ExtractLandmarks/dataset3.0/landmarks_npz"
+JSON_FILE_NAME = "dataset3_500w_model_metrics.json"
+NUM_WORDS = 500
 BATCH_SIZE = 32
 VAL_SPLIT = 0.20
 TEST_SPLIT = 0.00
@@ -473,7 +473,7 @@ def main() -> None:
             "Precision": [r["precision"] for r in summary_rows],
             "Accuracy": [r["accuracy"] for r in summary_rows],
         },
-        "Dataset3.0 All Words: F1 vs Precision vs Accuracy",
+        "dataset3.0 500 Words: F1 vs Precision vs Accuracy",
     )
     # plot_grouped_barh(
     plot_grouped_bar(
@@ -485,7 +485,7 @@ def main() -> None:
             "Top-5": [r["top5_acc"] for r in summary_rows],
             "Top-10": [r["top10_acc"] for r in summary_rows],
         },
-        "Dataset3.0 All Words: Top-K Accuracy",
+        "dataset3.0 500 Words: Top-K Accuracy",
     )
     # plot_grouped_barh(
     plot_grouped_bar(
@@ -498,7 +498,7 @@ def main() -> None:
             "F1 Mode": [r["f1_word_mode"] for r in summary_rows],
             "F1 Max": [r["f1_word_max"] for r in summary_rows],
         },
-        "Dataset3.0 All Words: Per-Word F1 Distribution Stats",
+        "dataset3.0 500 Words: Per-Word F1 Distribution Stats",
     )
 
     print("\nSaved outputs:")

@@ -1,26 +1,30 @@
 {
     "sequence_length": 64,
-    "camera_index": 0,
+    "camera_index": 1,
     "pose_model": "heavy",
-    "video_file": "/run/media/aryan/PoopiDrive/projects_linux/microsoft asl citizen/ASL_Citizen/videos/ABSOLUTELYNOTHING_06979518188270073-ABSOLUTELY NOTHING.mp4",
-    "prediction_model": "/home/aryan/projects_linux/WLASL_USING_MEDIAPIPE_ND_ML/UI/ASL_Models/asl_bigru_bigger_v1_aug_allw_02-05-26__03-11_alltimebest.keras",
+    "video_file": "/run/media/aryan/PoopiDrive/projects_linux/microsoft asl citizen/ASL_Citizen/videos/VERY_3198938127992572-VERY.mp4",
+    "prediction_model": "/home/aryan/projects_linux/WLASL_USING_MEDIAPIPE_ND_ML/UI/ASL_Models/asl_bigru_bigger_v1_aug_allw_06-05-26__03-47_best.keras",
     "draw_landmarks": true,
     "random_video_folder": "/run/media/aryan/PoopiDrive/projects_linux/microsoft asl citizen/ASL_Citizen/videos",
-    "print_predictions": false,
-
+    "print_predictions": true,
     "buffer_size": 256,
-    "motion_check_interval": 5,
-
-    "motion_start_threshold": 0.013,
+    "motion_check_interval": 6,
+    "frame_skip": 1,
+    "auto_thresholding": true,
+    "periodic_fallback_interval": 50,
+    "motion_start_threshold": 0.015,
     "motion_end_threshold": 0.008,
-    "motion_cooldown_frames": 15,
+    "motion_cooldown_frames": 10,
     "motion_min_sign_frames": 10,
     "motion_method": "max_hand",
     "motion_top_k": 12,
     "motion_tip_weight": 1.5,
     "motion_head_pad": 5,
     "motion_vis_thresh": 0.05,
-
-    "temporal_windows": [256, 128, 64],
+    "temporal_windows": [
+        64,
+        128,
+        256
+    ],
     "target_frames": 64
 }

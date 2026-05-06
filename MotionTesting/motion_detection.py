@@ -37,13 +37,13 @@ DEFAULTS = dict(
 # ─────────────────────────────────────────────
 
 # Landmarks used in energy calculation
-KEY_INDICES = [15, 16, 17, 18, 19, 20, 21, 22] + list(range(33, 75))
+KEY_INDICES = list(range(33, 75))
 
 # Positions of each hand group WITHIN the KEY_INDICES slice
-# Left:  wrist(15), pose tips(17,19,21), left hand joints(33-53) → indices 0,2,4,8..28
-_LEFT_POS  = [0, 2, 4] + list(range(8, 29))   # 24 points
-# Right: wrist(16), pose tips(18,20,22), right hand joints(54-74) → indices 1,3,5,29..49
-_RIGHT_POS = [1, 3, 5] + list(range(29, 50))  # 24 points
+# Left: left hand joints(33-53) → indices 0..20
+_LEFT_POS  = list(range(0, 21))   # 21 points
+# Right: right hand joints(54-74) → indices 21..41
+_RIGHT_POS = list(range(21, 42))  # 21 points
 
 # Finger tip landmark indices (raw array coords) for extra weighting
 FINGER_TIP_INDICES = set([17, 18, 19, 20, 21, 22, 37, 41, 45, 49, 53, 58, 62, 66, 70, 74])
