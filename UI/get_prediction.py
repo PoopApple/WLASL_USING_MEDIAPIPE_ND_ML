@@ -1,147 +1,164 @@
-from datetime import datetime
+"""
+get_prediction.py
+=================
+Mode-aware inference:
+
+  real_time    — 1 model.predict() call, no TTA flip, <30ms target.
+                 Returns {"mode": "real_time", "top": [[word, pct], ...]}
+
+  video_testing — TTA (orig + flipped) on 3 temporal slices (full, first-half,
+                  second-half).  Runs offline so speed is not a concern.
+                  Returns {"mode": "video_testing", "slices": {label: [[word, pct], ...]}}
+"""
 
 import tensorflow as tf
-
 import numpy as np
-
 import os
 import json
 
-_INDEX_TO_WORD = {}
+TARGET_FRAMES = 64   # Must match MAX_FRAMES in ModelTrain/model.py
+TOPK          = 10
 
-def load_prediction_model(model_path):
+_INDEX_TO_WORD: dict = {}
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+def load_prediction_model(model_path: str):
     """
-    Load your .keras model here.
-    This will be called ONCE by the InferenceWorker thread.
+    Load a .keras model for inference only.
+
+    compile=False skips restoring the optimizer/loss (avoids LabelSmoothingSparseCCE
+    / AdamW deserialization errors).  The model is only used for forward-pass
+    prediction so this is always safe.
     """
     global _INDEX_TO_WORD
-    
+
     model_dir = os.path.dirname(model_path)
-    json_path = os.path.join(model_dir, "word_to_ind_all.json")
-    
-    try:
-        with open(json_path, "r") as f:
-            word_to_ind = json.load(f)
-            _INDEX_TO_WORD = {v: k for k, v in word_to_ind.items()}
-            print(len(_INDEX_TO_WORD))
-    except Exception as e:
-        print(f"Error loading JSON map: {e}")
+    # Try both possible JSON filenames
+    for fname in ("word_to_ind_all.json", "word_to_ind.json", "word_to_ind_500.json"):
+        json_path = os.path.join(model_dir, fname)
+        if os.path.exists(json_path):
+            try:
+                with open(json_path) as f:
+                    word_to_ind = json.load(f)
+                _INDEX_TO_WORD = {v: k for k, v in word_to_ind.items()}
+                print(f"[get_prediction] Loaded {len(_INDEX_TO_WORD)}-word map from {json_path}")
+            except Exception as e:
+                print(f"[get_prediction] Error loading label map: {e}")
+            break
+    else:
+        print(f"[get_prediction] WARNING: no word_to_ind JSON found in {model_dir}")
 
-    return tf.keras.models.load_model(model_path)
+    model = tf.keras.models.load_model(model_path, compile=False)
+    print(f"[get_prediction] Model loaded: {os.path.basename(model_path)}")
+    return model
 
 
-TOPK = 5
-
-
-def _predict_arr_tta(model, ARR, mask):
+# ─────────────────────────────────────────────────────────────────────────────
+def _top_k_raw(predictions) -> list:
     """
-    Run inference on ARR (1, 128, 64, 4) with TTA (Test-Time Augmentation).
-    Predicts on original + horizontally flipped, then averages the softmax outputs.
-    
-    Returns averaged predictions array of shape (1, num_classes).
+    Return top-K predictions as [[word, confidence_pct], ...] sorted by confidence.
     """
+    idx    = np.argpartition(predictions, -TOPK, axis=1)[0, -TOPK:]
+    idx    = idx[np.argsort(predictions[0, idx])][::-1]
+    return [
+        [_INDEX_TO_WORD.get(int(i), f"cls_{i}"), round(float(predictions[0, i]) * 100, 1)]
+        for i in idx
+    ]
+
+
+def _predict_one(model, ARR, mask):
+    """Single forward pass.  ARR: (1,64,64,4), mask: (1,64) bool."""
+    return model.predict({"input_data": ARR, "input_mask": mask}, verbose=0)
+
+
+def _predict_tta(model, ARR, mask):
+    """TTA: average of original + horizontally flipped."""
     from preprocess import flip_processed_arr
-
-    # Original prediction
-    preds_orig = model.predict({"input_data": ARR, "input_mask": mask}, verbose=0)
-
-    # Flipped prediction
-    arr_flipped = flip_processed_arr(ARR[0])  # (128, 64, 4)
-    ARR_flip = np.expand_dims(arr_flipped, axis=0)
-    preds_flip = model.predict({"input_data": ARR_flip, "input_mask": mask}, verbose=0)
-
-    # Average softmax outputs
+    preds_orig = _predict_one(model, ARR, mask)
+    arr_flip   = np.expand_dims(flip_processed_arr(ARR[0]), 0)
+    preds_flip = _predict_one(model, arr_flip, mask)
     return (preds_orig + preds_flip) / 2.0
 
 
-def _top_k_from_predictions(predictions, include_confidence, print_label="", print_preds=False):
-    """Rank top-k from averaged predictions array."""
-    idx = np.argpartition(predictions, -TOPK, axis=1)[0, -TOPK:]
-    idx = idx[np.argsort(predictions[0, idx])][::-1]
-    values = predictions[0, idx]
-    top_k_list = []
-    for i, v in zip(idx, values):
-        word = _INDEX_TO_WORD.get(int(i), "Unknown")
-        if print_preds:
-            print(f"  {print_label} {word}: {float(v)*100:.1f}%")
-        if include_confidence:
-            top_k_list.append(f"{word} ({float(v)*100:.1f}%)")
-        else:
-            top_k_list.append(word)
-    return top_k_list
+def _make_slice_input(arr_padded, predefined_mask, start: int, end: int):
+    """
+    Slice [start:end] from (TARGET_FRAMES, 64, 4) and re-pad to full size.
+    The mask for padded positions stays False.
+    """
+    n    = end - start
+    ARR  = np.zeros((TARGET_FRAMES, 64, 4), dtype=np.float32)
+    mask = np.zeros(TARGET_FRAMES, dtype=bool)
+    ARR[:n]  = arr_padded[start:end]
+    mask[:n] = predefined_mask[start:end]
+    return np.expand_dims(ARR, 0), np.expand_dims(mask, 0)
 
 
-def run_inference(model, sequence, print_preds=False, include_confidence=False):
-    # sequence is either:
-    #   - a tuple (arr_padded, mask) of shape (128,64,4) and (128,) from normalise_lm_arr_temporally
-    #   - a plain list of processed frames (legacy real_time without normalization)
+# ─────────────────────────────────────────────────────────────────────────────
+def run_inference(model, sequence, mode: str = "real_time", print_preds: bool = False) -> str | None:
+    """
+    Run inference and return a JSON string.
 
-    if isinstance(sequence, tuple) and len(sequence) == 2:
+    Parameters
+    ----------
+    model    : loaded Keras model
+    sequence : tuple of arrays/info, typically (arr_padded, mask, frame_start, frame_end)
+    mode     : "real_time" | "video_testing"
+    """
+    if not (isinstance(sequence, tuple) and len(sequence) in (2, 4)):
+        print("[get_prediction] run_inference: unexpected sequence format, skipping.")
+        return None
+
+    if len(sequence) == 4:
+        arr_padded, predefined_mask, frame_start, frame_end = sequence
+    else:
         arr_padded, predefined_mask = sequence
+        frame_start, frame_end = None, None
 
-        def predict_slice(start, end):
-            sliced_arr = arr_padded[start:end]
-            sliced_mask = predefined_mask[start:end]
-            n = end - start
-            ARR = np.zeros(shape=(128, 64, 4), dtype=np.float32)
-            mask = np.zeros(shape=128, dtype=bool)
-            ARR[:n] = sliced_arr
-            mask[:n] = sliced_mask
-            ARR = np.expand_dims(ARR, axis=0)
-            mask = np.expand_dims(mask, axis=0)
-            try:
-                predictions = _predict_arr_tta(model, ARR, mask)
-                return _top_k_from_predictions(
-                    predictions,
-                    include_confidence,
-                    print_label=f"[{start},{end-1}]",
-                    print_preds=print_preds,
-                )
-            except Exception as e:
-                print(f"Prediction Error [{start},{end-1}]: {e}")
-                return []
-
-        if print_preds:
-            print(f"\n--- Prediction (TTA) ---")
-
-        final_output = [
-            predict_slice(0, 128),
-            predict_slice(62, 128),
-            predict_slice(0, 62),
-            predict_slice(32, 94),
-            predict_slice(19, 109),
+    # ── Slices for both modes ─────────────────────────────────────────────────
+    T, H = TARGET_FRAMES, TARGET_FRAMES // 2
+    if mode == "real_time":
+        slices = [("Full", 0, T)]
+    else:
+        slices = [
+            ("Full",         0, T),
+            ("First Half",   0, H),
+            ("Second Half",  H, T),
         ]
-        return json.dumps(final_output)
-
-    # Legacy path: raw list of frames (should not normally be reached anymore)
+        
+    result_slices = {}
     if print_preds:
-        print(f"\n--- New Prediction Cycle ({len(sequence)} frames) ---")
+        print(f"\n--- Prediction ({mode}, {TARGET_FRAMES} frames) ---")
 
-    def predict_slice_legacy(start, end):
-        slice_seq = sequence[start:end]
-        slice_len = len(slice_seq)
-        if slice_len == 0:
-            return []
-        mask = np.zeros(shape=128, dtype=bool)
-        mask[:slice_len] = 1
-        ARR = np.zeros(shape=(128, 64, 4), dtype=np.float32)
-        ARR[:slice_len] = slice_seq
-        ARR = np.expand_dims(ARR, axis=0)
-        mask = np.expand_dims(mask, axis=0)
+    for label, s, e in slices:
+        ARR, mask = _make_slice_input(arr_padded, predefined_mask, s, e)
+        
+        # CuDNN doesn't support completely empty sequence masks (all False)
+        if not np.any(mask):
+            print(f"[get_prediction] Slice '{label}' has no active frames, skipping.")
+            result_slices[label] = []
+            continue
+            
         try:
-            predictions = _predict_arr_tta(model, ARR, mask)
-            return _top_k_from_predictions(predictions, include_confidence,
-                                           print_label=f"({start},{end-1})", print_preds=print_preds)
-        except Exception as e:
-            print(f"Prediction Error for ({start},{end-1}): {e}")
-            return []
+            if mode == "real_time":
+                # No TTA for real-time to save latency
+                preds = _predict_one(model, ARR, mask)
+            else:
+                # TTA for video testing
+                preds = _predict_tta(model, ARR, mask)
+        except Exception as ex:
+            print(f"[get_prediction] Slice '{label}' error: {ex}")
+            result_slices[label] = []
+            continue
+        top = _top_k_raw(preds)
+        result_slices[label] = top
+        
+        # ALWAYS print the predictions to the console for monitoring
+        print(f"\n--- Output ({label}) ---")
+        for rank_idx, (w, p) in enumerate(top):
+            print(f" #{rank_idx+1:<2} | {w:<15} | {p:.1f}%")
 
-    final_output = [
-        predict_slice_legacy(0, 128),
-        predict_slice_legacy(62, 128),
-        predict_slice_legacy(0, 62),
-        predict_slice_legacy(32, 94),
-        predict_slice_legacy(19, 109),
-    ]
-    return json.dumps(final_output)
-
+    res = {"mode": mode, "slices": result_slices}
+    if frame_start is not None and frame_end is not None:
+        res["frame_range"] = [int(frame_start), int(frame_end)]
+    return json.dumps(res)

@@ -8,6 +8,9 @@ dependencies = [
     "mediapipe>=0.10.35",
     "numpy>=2.4.4",
     "opencv-python>=4.13.0.92",
+    "pyopengl>=3.1.10",
     "pyqt5>=5.15.11",
+    "pyqtgraph>=0.14.0",
+    "pyside6>=6.11.0",
     "tensorflow[and-cuda]>=2.21.0",
 ]

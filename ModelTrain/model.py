@@ -1468,5 +1468,5 @@ def get_callbacks(model_dir: str, model_name: str | None = None, patience: int =
             verbose=1,
         ),
         # ── Overfit guard: hard-stop at 8% train-val gap ──
-        OverfitGuard(max_gap=0.08, grace_epochs=50),
+        OverfitGuard(max_gap=0.02, grace_epochs=50),
     ]

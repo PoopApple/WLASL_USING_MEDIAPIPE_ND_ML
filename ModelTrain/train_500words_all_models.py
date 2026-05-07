@@ -530,7 +530,7 @@ if __name__ == "__main__":
     EPOCHS = 1000
     VAL_SPLIT = 0.20
     TEST_SPLIT = 0.00
-    SEED = 1234
+    SEED = 1024
     LEARNING_RATE = 1e-4
     PATIENCE = 10
     USE_TFRECORD = True
@@ -544,8 +544,8 @@ if __name__ == "__main__":
         # "bigru_flash",
         # "bigru_angular_v1",
         "bigru_bigger_v1",
-        "bigru_bigger_v2",
-        "bigru_bigger_angular_v1",
+        # "bigru_bigger_v2",
+        # "bigru_bigger_angular_v1",
         # "bigru_bigger_angular_flash_v1",
         # "conv_bigru",
         # "conv_only_v2",

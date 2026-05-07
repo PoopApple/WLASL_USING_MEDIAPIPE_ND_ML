@@ -23,7 +23,7 @@ import tensorflow as tf
 # CONFIG — augmentation hyperparameters
 # ══════════════════════════════════════════════════════════════════════
 
-NOISE_STDDEV = 0.015          # Gaussian noise σ (landmarks are ~0-1 range)
+NOISE_STDDEV = 0.05          # Gaussian noise σ (landmarks are ~0-1 range)
 SCALE_RANGE = (0.90, 1.10)    # Random spatial scale factor range
 FRAME_DROP_RATE = 0.05        # Probability of dropping each frame
 LANDMARK_DROP_RATE = 0.05     # Probability of dropping each landmark

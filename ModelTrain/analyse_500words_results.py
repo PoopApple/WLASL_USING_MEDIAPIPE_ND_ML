@@ -34,6 +34,8 @@ USE_TFRECORD = True
 USE_AUGMENTATION = True
 
 
+ROOT_DIRS = ["dataset4.0/allwords","dataset4.0/allwords","dataset4.0/allwords","dataset4.0/allwords"]
+
 def compute_kinematic_features(x):
     x = x[:, :, :63, :3]
 
