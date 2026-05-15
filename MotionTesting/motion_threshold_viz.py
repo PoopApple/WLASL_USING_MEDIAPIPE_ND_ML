@@ -547,7 +547,41 @@ def main(videos_dir, landmarks_dir, n, start_thresh, end_thresh, cooldown, min_f
     print("\nDone. Adjust START_THRESH / END_THRESH / TOP_K / TIP_WEIGHT based on what you saw.")
 
 
+def one_vid(video_path, landmark_path, n, start_thresh, end_thresh, cooldown, min_frames, method, top_k, tip_weight, head_pad, seed):
+
+
+    print("Collecting video/npy pairs...")
+
+
+
+    window_name = "Motion Viz — q=quit, any key=next"
+    cv2.namedWindow(window_name, cv2.WINDOW_NORMAL)
+
+
+
+    _ = visualise_video(
+        video_path, landmark_path,
+        start_thresh, end_thresh,
+        cooldown, min_frames,
+        method=method,
+        top_k=top_k,
+        tip_weight=tip_weight,
+        head_pad=head_pad,
+        window_name=window_name
+    )
+
+
+    cv2.destroyAllWindows()
+    print("\nDone. Adjust START_THRESH / END_THRESH / TOP_K / TIP_WEIGHT based on what you saw.")
+
+
+
+
 if __name__ == "__main__":
+
+
+
+
     # ── CONFIGURATION ──
     VIDEOS_DIR     = "/run/media/aryan/PoopiDrive/projects_linux/microsoft asl citizen/ASL_Citizen/videos/"
     LANDMARKS_DIR  = "/run/media/aryan/PoopiDrive/projects_linux/microsoft asl citizen/landmarks/"
@@ -565,6 +599,26 @@ if __name__ == "__main__":
     
     SEED           = 42
     # ──────────────────
+
+    vidpath = "/run/media/aryan/PoopiDrive/projects_linux/microsoft asl citizen/ASL_Citizen/videos/YES_9953610281521326-YES.mp4"
+    npypath = "/run/media/aryan/PoopiDrive/projects_linux/microsoft asl citizen/landmarks/YES/YES_9953610281521326-YES.npy"
+
+    one_vid(
+        vidpath,
+        npypath,
+        N_SAMPLES,
+        START_THRESH,
+        END_THRESH,
+        COOLDOWN,
+        MIN_FRAMES,
+        METHOD,
+        TOP_K,
+        TIP_WEIGHT,
+        HEAD_PAD,
+        SEED
+    )
+    #exit()
+
 
     main(
         VIDEOS_DIR, 

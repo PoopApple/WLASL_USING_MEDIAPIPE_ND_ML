@@ -763,32 +763,32 @@ if __name__ == "__main__":
     
     # measure_time(check200vids)
     
-    timeofwords200 = 1065220 
-    timeofword1 = timeofwords200/200
+    # timeofwords200 = 1065220 
+    # timeofword1 = timeofwords200/200
     
-    numofvids = 83399 
+    # numofvids = 83399 
     
-    timeoftotal = numofvids*timeofword1
+    # timeoftotal = numofvids*timeofword1
     
-    insec = timeoftotal/1000
-    inmin = insec/60
-    inhour = inmin/60
-    indays = inhour/24
+    # insec = timeoftotal/1000
+    # inmin = insec/60
+    # inhour = inmin/60
+    # indays = inhour/24
     
-    print(f"inmin {inmin}")
-    print(f"inhours {inhour}")
-    print(f"indays {indays}")
+    # print(f"inmin {inmin}")
+    # print(f"inhours {inhour}")
+    # print(f"indays {indays}")
      
-    exit()
+    # exit()
     """
     agar model abhi bhi galat ho
     
     toh masking try for start and end 10% kyuki usme haath position pe aare hote
     
     """
-    # doshit("./test_actor.webm", showvid=True)
+    doshit("/run/media/aryan/PoopiDrive/projects_linux/microsoft asl citizen/ASL_Citizen/videos/BASKETBALL1_57337857006252-BASKETBALL.mp4", showvid=True)
     # process_one("./test_actor.webm", "./test_actor.npy")
-
+    exit()
     # exit()
     # vidpath = "./TestingVids/ACCENT_674051280092625-ACCENT.mp4"
     # vidpath = "./TestingVids/ACCESS_20630301986906696-ACCESS.mp4"
